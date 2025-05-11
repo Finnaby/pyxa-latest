@@ -143,13 +143,20 @@
 
         <x-forms.input
             id="c_logo"
-            label="{{ __('Brand Voice') }}"
+            label="{{ __('Logo') }}"
             tooltip="{{ __('Describe the primary demographic or audience your company is targeting.') }}"
             type="file"
             name="c_logo"
             value="{{ $item?->logo }}"
             size="lg"
         />
+
+        @if ($item?->logo)
+            <div class="mt-2">
+                <label>{{ __('Current Logo') }}</label>
+                <img src="{{ asset('uploads/' . $item->logo) }}" alt="Logo" class="img-fluid" />
+            </div>
+        @endif
 
         <x-forms.input
             id="c_color"

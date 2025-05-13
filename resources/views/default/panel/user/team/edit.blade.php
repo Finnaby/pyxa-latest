@@ -175,7 +175,7 @@
                                             id="remaining_images"
                                             type="text"
                                             name="remaining_images"
-                                            value="{{ $member->remaining_images }}"
+                                            value="{{ !$member->allow_unlimited_credits  ? $member->remaining_images: '' }}"
                                         >
                                         @error('remaining_images')
                                             <div class="invalid-feedback">
@@ -197,7 +197,7 @@
                                             id="remaining_words"
                                             type="text"
                                             name="remaining_words"
-                                            value="{{ $member->remaining_words }}"
+                                            value="{{ !$member->allow_unlimited_credits ? $member->remaining_words : '' }}"
                                         >
                                         @error('remaining_words')
                                             <div class="invalid-feedback">

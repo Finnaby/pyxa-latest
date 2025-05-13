@@ -85,6 +85,8 @@ class TeamController extends Controller
 
     public function teamMember(Team $team, TeamMember $teamMember)
     {
+
+
         return view('panel.user.team.edit', [
             'filter'           => 'all',
             'team'             => $team,
@@ -104,25 +106,19 @@ class TeamController extends Controller
             ]);
         }
 
+
         $request['allow_unlimited_credits'] = (bool) $request->get('allow_unlimited_credits', false);
-
-        $user = $team->user;
-
-        $manager_remaining_images = $user->remaining_images;
-        $manager_remaining_words = $user->remaining_words;
 
         $data = $request->validate([
             'role'             => 'required',
             'status'           => 'required',
-            'remaining_images' => $request['allow_unlimited_credits']
-                ? 'sometimes|nullable|numeric'
-                : 'required|numeric|max:' . $manager_remaining_images,
-            'remaining_words' => $request['allow_unlimited_credits']
-                ? 'sometimes|nullable|numeric'
-                : 'required|numeric|max:' . $manager_remaining_words,
+            'remaining_images' =>  'sometimes|nullable|numeric',
+            'remaining_words' => 'sometimes|nullable|numeric',
             'allow_unlimited_credits' => 'sometimes|nullable|boolean',
         ]);
 
+        $data['remaining_images'] = $data['remaining_images'] ?? 0;
+        $data['remaining_words']  = $data['remaining_words'] ?? 0;
         $teamMember->update($data);
 
         return to_route('dashboard.user.team.index')->with([

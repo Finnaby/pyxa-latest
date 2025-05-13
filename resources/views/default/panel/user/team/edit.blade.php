@@ -3,6 +3,8 @@
 @section('title', __('Team'))
 
 @section('content')
+
+</style>
     <!-- Page body -->
     <div class="py-10">
         <div class="flex flex-wrap gap-y-8">
@@ -155,9 +157,9 @@
                                 <small>@lang('If allowed, user will be able to use all credits available in the team package.')</small>
                             </div>
                         </div>
+                      
                         <div
-                            class="col-md-12 {{ old('allow_unlimited_credits', $member->allow_unlimited_credits) ? 'd-none' : '' }}"
-                            id="credit_limit_custom"
+                            class="col-md-12"
                         >
                             <div class="row">
                                 <div class="col-md-12">
@@ -229,16 +231,25 @@
         document.addEventListener("DOMContentLoaded", function() {
             "use strict";
 
-            $('#allow_unlimited_credits').change(function() {
-
-                let checked = $(this).is(':checked');
-
+            function toggleCreditFields(checked) {
                 if (checked) {
-                    $('#credit_limit_custom').addClass('d-none');
+                    $('#remaining_images').val('').prop('disabled', true);
+                    $('#remaining_words').val('').prop('disabled', true);
                 } else {
-                    $('#credit_limit_custom').removeClass('d-none');
+                    $('#remaining_images').prop('disabled', false);
+                    $('#remaining_words').prop('disabled', false);
                 }
-            })
+            }
+
+            $('#allow_unlimited_credits').change(function () {
+                let checked = $(this).is(':checked');
+                toggleCreditFields(checked);
+            });
+
+            // Optional: run on page load to apply initial state
+            $(function () {
+                toggleCreditFields($('#allow_unlimited_credits').is(':checked'));
+            });
 
             const options = {
                 series: [{{ (int) $remaining_words }}, {{ (int) $total_words }}],

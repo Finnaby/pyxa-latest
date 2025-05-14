@@ -1692,7 +1692,7 @@ class AIController extends Controller
             $nameOfPrompt = explode(' ', mb_substr($prompt[0]['text'], 0, 15))[0];
             $nameOfImage = Str::random(12) . '-STABLE-' . $nameOfPrompt . '.png';
             if (
-                ($stable_type === 'text-to-image' || $stable_type === 'image-to-image' || $stable_type === 'upscale') && $isV2BetaModels
+                ($stable_type === 'text-to-image' || $stable_type === 'image-to-image' || $stable_type === 'upscale')
             ) {
                 $contents = base64_decode(json_decode($body, false, 512, JSON_THROW_ON_ERROR)->image);
             } else {

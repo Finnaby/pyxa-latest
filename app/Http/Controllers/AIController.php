@@ -1502,9 +1502,9 @@ class AIController extends Controller
         }
 
         $sd3Payload = [];
-        $baseUri = $isV2BetaModels && in_array($stable_type, ['text-to-image', 'image-to-image'], true)
-            ? 'https://api.stability.ai/v2beta/stable-image/generate/'
-            : 'https://api.stability.ai/v1/generation/';
+        $baseUri = in_array($stable_type, ['text-to-image', 'image-to-image'], true)
+        ? 'https://api.stability.ai/v2beta/stable-image/generate/'
+        : 'https://api.stability.ai/v1/generation/';
         $contentType = ($stable_type === 'image-to-image') ? 'multipart/form-data' : 'application/json';
         $client = new Client([
             'base_uri' => $baseUri,
@@ -1623,43 +1623,53 @@ class AIController extends Controller
         }
 
         try {
-            if ($isV2BetaModels && in_array($stable_type, ['text-to-image', 'image-to-image'], true)) {
+            if (in_array($stable_type, ['text-to-image', 'image-to-image', 'upscale'], true)) {
+                
                 $defaultSdModel = 'sd3';
                 $sd3Payload[] = ['name' => 'model', 'contents' => $defaultSdModel];
-                $sd3Payload[] = [
-                    'name'     => 'aspect_ratio',
-                    'contents' => $width . ':' . $height,
-                ];
+                if($stable_type === 'upscale' && $stable_type === 'text-to-image')
+                {
+                    $sd3Payload[] = [
+                        'name'     => 'aspect_ratio',
+                        'contents' => 21 . ':' . 9,
+                    ];
+                }
 
-                $response = $client->post($defaultSdModel, [
-                    'headers'   => ['accept' => 'application/json'],
-                    'multipart' => $sd3Payload,
-                ]);
-            } elseif ($stable_type === 'upscale') {
-                set_time_limit(500);
-                $http = new Client([
-                    'headers'  => [
-                        'Content-Type'  => $contentType,
-                        'Authorization' => 'Bearer ' . $stableDiffusionKey,
-                        'Accept'        => 'application/json',
-                    ],
-                ]);
-                $response = $http->post('https://api.stability.ai/v2beta/stable-image/upscale/fast', [
-                    'multipart' => [
-                        [
-                            'name'     => 'image',
-                            'contents' => $init_image->get(),
-                            'filename' => $init_image->getClientOriginalName(),
+                if ($stable_type === 'upscale') {
+                    $http = new Client([
+                        'headers'  => [
+                            'Content-Type'  => $contentType,
+                            'Authorization' => 'Bearer ' . $stableDiffusionKey,
+                            'Accept'        => 'application/json',
                         ],
-                        [
-                            'name'     => 'output_format',
-                            'contents' => 'png',
+                    ]);
+
+                    $response = $http->post('https://api.stability.ai/v2beta/stable-image/upscale/fast', [
+                        'multipart' => [
+                            [
+                                'name'     => 'image',
+                                'contents' => $init_image->get(),
+                                'filename' => $init_image->getClientOriginalName(),
+                            ],
+                            [
+                                'name'     => 'output_format',
+                                'contents' => 'png',
+                            ],
                         ],
-                    ],
-                ]);
+                    ]);
+
+                } else {
+                    $response = $client->post($defaultSdModel, [
+                        'headers'   => ['accept' => 'application/json'],
+                        'multipart' => $sd3Payload,
+                    ]);
+                }
+
             } else {
                 $defaultSdModel = $stable_type === 'multi-prompt' ? EntityEnum::STABLE_DIFFUSION_V_1_6->value : $defaultSdModel;
-                $response = $client->post($defaultSdModel . '/' . $stable_url, [$content_type => $payload]);
+                $response = $client->post("$defaultSdModel/$stable_url", [
+                    $content_type => $payload,
+                ]);
             }
         } catch (Exception $e) {
             if ($e->hasResponse()) {

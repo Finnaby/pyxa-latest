@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class AiMusicService
 {
+    
+    
     public const BASE_URL = 'https://api.aimlapi.com/v2/generate/audio/' . EngineEnum::AI_ML_MINIMAX->value;
 
     public const CLIP_GPT_URL = '/generate';
@@ -24,8 +26,8 @@ class AiMusicService
 
     public function __construct()
     {
-        ini_set('max_execution_time', 300);
-        set_time_limit(300);
+        ini_set('max_execution_time', 3000000000000000);
+        set_time_limit(30000000000000000);
         $this->apiKey = Setting::getCache()->aimlapi_key;
         $this->model = Setting::getCache()->ai_music_model;
     }
@@ -50,10 +52,12 @@ class AiMusicService
                 $fileContent = $audioResponse->body();
                 $fileName = time() . '.mp3';
             }
-
+            
             $response = Http::withHeaders([
                 'Authorization' => "Bearer $this->apiKey",
-            ])->attach('file', $fileContent, $fileName)
+            ])
+            ->timeout(120)
+            ->attach('file', $fileContent, $fileName)
                 ->post(self::BASE_URL . self::UPLOAD_VOICE_URL, [
                     'purpose' => $request->input('purpose'),
                 ]);

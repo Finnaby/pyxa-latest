@@ -59,8 +59,7 @@
                                 <x-button
                                     class="hover:text-red-500"
                                     variant="link"
-                                    onclick="return confirm('Are you sure to cancel your plan? You will lose your remaining usage.');"
-                                    href="{{  (route('dashboard.user.payment.cancelActiveSubscription')) }}"
+                                    href="{{ route('dashboard.support.new') }}"
                                 >
                                     {{ __('Cancel My Plan') }}
                                 </x-button>

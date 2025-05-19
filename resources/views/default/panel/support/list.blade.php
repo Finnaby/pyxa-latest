@@ -34,6 +34,7 @@
                     <th>
                         {{ __('Last Updated') }}
                     </th>
+                    <th>{{ __('Attachment') }}</th>
                     <th class="text-end">
                         {{ __('Actions') }}
                     </th>
@@ -67,6 +68,15 @@
                         </td>
                         <td>
                             {{ $entry->updated_at }}
+                        </td>
+                        <td class="text-center">
+                            @if ($entry->attachment)
+                                <a href="{{ asset('uploads/' . $entry->attachment) }}" download>
+                                    <x-tabler-download class="size-5 text-blue-600 cursor-pointer" title="{{ __('Download Attachment') }}" />
+                                </a>
+                            @else
+                                <span class="text-gray-400">—</span>
+                            @endif
                         </td>
                         <td class="whitespace-nowrap text-end">
                             <x-button

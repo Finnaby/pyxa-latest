@@ -33,31 +33,29 @@ class User extends Authenticatable
     use HasRoles;
     use Notifiable;
 
-    // protected $fillable = [
-    //     'coingate_subscriber_id',
-    //     'team_id',
-    //     'team_manager_id',
-    //     'name',
-    //     'surname',
-    //     'email',
-    //     'country',
-    //     'otp',
-    //     'type',
-    //     'password',
-    //     'affiliate_id',
-    //     'affiliate_code',
-    //     'email_confirmation_code',
-    //     'email_confirmed',
-    //     'password_reset_code',
-    //     'anthropic_api_keys',
-    //     'api_keys',
-    //     'defi_setting',
-    //     'affiliate_status',
-    //     'entity_credits',
-    //     'last_activity_at',
-    // ];
-
-     protected $guarded = []; 
+    protected $fillable = [
+        'coingate_subscriber_id',
+        'team_id',
+        'team_manager_id',
+        'name',
+        'surname',
+        'email',
+        'country',
+        'otp',
+        'type',
+        'password',
+        'affiliate_id',
+        'affiliate_code',
+        'email_confirmation_code',
+        'email_confirmed',
+        'password_reset_code',
+        'anthropic_api_keys',
+        'api_keys',
+        'defi_setting',
+        'affiliate_status',
+        'entity_credits',
+        'last_activity_at',
+    ];
 
     protected $hidden = [
         'password',

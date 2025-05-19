@@ -32,6 +32,7 @@
             @endif
             <img
                 class="transition-all group-[.lqd-is-sticky]/header:peer-first:translate-x-2 group-[.lqd-is-sticky]/header:peer-first:opacity-0"
+                style="width: 60%;" 
                 src="{{ custom_theme_url($setting->logo_path, true) }}"
                 @if (isset($setting->logo_2x_path)) srcset="/{{ $setting->logo_2x_path }} 2x" @endif
                 alt="{{ $setting->site_name }} logo"

@@ -6,7 +6,8 @@
         :class="{ active: activeChatbot }"
     >
         {{-- Edit Window Header --}}
-        <div class="lqd-chatbot-edit-window-header sticky top-0 z-2 border-b bg-background/60 backdrop-blur-lg backdrop-saturate-150">
+        <div
+            class="lqd-chatbot-edit-window-header sticky top-0 z-2 border-b bg-background/60 backdrop-blur-lg backdrop-saturate-150">
             <div class="flex flex-wrap items-center justify-between gap-4 px-3 py-3 lg:h-[--header-height] lg:px-12">
                 {{-- Header Actions --}}
                 <div class="flex flex-wrap items-center gap-3">
@@ -36,6 +37,7 @@
                 <div class="lqd-steps hidden flex-col gap-1 lg:flex">
                     <div class="lqd-steps-steps flex items-center justify-between gap-1 lg:gap-3">
                         @foreach (\App\Extensions\Chatbot\System\Enums\StepEnum::toArray() as $step)
+                            @continue(!\App\Extensions\Chatbot\System\Helpers\ChatbotHelper::existChannels() && $step === 'channel')
                             <button
                                 class="lqd-step group/step flex gap-3 rounded p-2 text-3xs font-semibold capitalize text-heading-foreground transition-colors hover:bg-heading-foreground/5 disabled:pointer-events-none disabled:opacity-50 lg:min-w-32"
                                 type="button"
@@ -62,17 +64,24 @@
                                         fill="currentColor"
                                         xmlns="http://www.w3.org/2000/svg"
                                     >
-                                        <path d="M3.14724 7L0 3.68191L0.78681 2.85239L3.14724 5.34096L8.21319 0L9 0.829522L3.14724 7Z" />
+                                        <path
+                                            d="M3.14724 7L0 3.68191L0.78681 2.85239L3.14724 5.34096L8.21319 0L9 0.829522L3.14724 7Z"
+                                        />
                                     </svg>
                                 </span>
                                 @lang($step)
                             </button>
                         @endforeach
                     </div>
-                    <div class="lqd-step-progress relative h-[3px] w-full overflow-hidden rounded-lg bg-heading-foreground/5">
+                    <div
+                        class="lqd-step-progress relative h-[3px] w-full overflow-hidden rounded-lg bg-heading-foreground/5">
                         <div
                             class="lqd-step-progress-bar absolute start-0 top-0 h-full w-0 rounded-full bg-gradient-to-r from-gradient-from to-gradient-to transition-all"
-                            :style="{ width: editingStep * 25 + '%' }"
+                            :style="{
+                                width: editingStep *
+                                    {{ \App\Helpers\Classes\MarketplaceHelper::isRegistered('chatbot-multi-channel') ? 20 : 25 }} +
+                                    '%'
+                            }"
                         ></div>
                     </div>
                 </div>
@@ -82,17 +91,23 @@
         <div class="lqd-chatbot-edit-window-content py-8 lg:py-0">
             <div class="container flex flex-wrap justify-between gap-y-5">
                 {{-- Options Container --}}
-                <div class="lqd-chatbot-edit-window-options grid w-full lg:min-h-[calc(100vh-var(--header-height))] lg:w-[430px] lg:py-16">
+                <div
+                    class="lqd-chatbot-edit-window-options grid w-full lg:min-h-[calc(100vh-var(--header-height))] lg:w-[430px] lg:py-16">
                     <input
                         type="hidden"
                         name="id"
                         x-model="activeChatbot.id"
                     >
                     @include('chatbot::home.edit-window.edit-steps.edit-step-configure')
-                    @include('chatbot::home.edit-window.edit-steps.edit-step-customize', ['avatars', $avatars])
+                    @include('chatbot::home.edit-window.edit-steps.edit-step-customize', [
+                        'avatars',
+                        $avatars,
+                    ])
                     @include('chatbot::home.edit-window.edit-steps.edit-step-train')
                     @include('chatbot::home.edit-window.edit-steps.edit-step-embed')
-
+					@if(\App\Extensions\Chatbot\System\Helpers\ChatbotHelper::existChannels())
+						@include('chatbot::home.edit-window.edit-steps.edit-step-channel')
+					@endif
                     <div
                         class="col-start-1 col-end-2 row-start-2 row-end-2 mt-10 flex flex-col gap-3"
                         :class="{ 'invisible': editingStep > 2 }"
@@ -177,7 +192,8 @@
                             })
                             .then(data => {
                                 const avatar = data.data;
-                                const lastAvatarItem = avatarsList.querySelector('.lqd-chatbot-avatar-list-item:last-child');
+                                const lastAvatarItem = avatarsList.querySelector(
+                                    '.lqd-chatbot-avatar-list-item:last-child');
                                 const newAvatarItem = lastAvatarItem.cloneNode(true);
 
                                 const newInput = newAvatarItem.querySelector('input');

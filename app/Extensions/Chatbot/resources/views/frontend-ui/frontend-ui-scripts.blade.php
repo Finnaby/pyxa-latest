@@ -37,7 +37,7 @@
                 },
 				async initAbly() {
 
-					@if(isset($session))
+					@if(isset($session) && setting('ably_public_key'))
 						if (!this.ablyInstance){
 							this.ablyInstance = new Ably.Realtime.Promise("{{ setting('ably_public_key') }}");
 						}
@@ -249,7 +249,9 @@
 							this.ablyChannel = null;
 						}
 
-						await this.initAbly();
+						@if(\App\Helpers\Classes\MarketplaceHelper::isRegistered('chatbot-agent') && isset($chatbot) && isset($session))
+							await this.initAbly();
+						@endif
 
                         return this.fetching = false;
                     }
@@ -266,13 +268,16 @@
 
                     this.fetching = false;
 
-					if(this.ablyChannel && this.ablyInstance) {
-						this.ablyChannel.unsubscribe();
-						// this.ablyInstance.close();
-						this.ablyChannel = null;
-					}
 
-					await this.initAbly();
+					@if(\App\Helpers\Classes\MarketplaceHelper::isRegistered('chatbot-agent') && isset($chatbot) && isset($session))
+						if(this.ablyChannel && this.ablyInstance) {
+							this.ablyChannel.unsubscribe();
+							// this.ablyInstance.close();
+							this.ablyChannel = null;
+						}
+						await this.initAbly();
+					@endif
+
 				},
                 async openConversation(conversationId, fetchData = {{ $is_editor ? 'false' : 'true' }}) {
 

@@ -6,7 +6,6 @@
 >
     <div
         class="lqd-ext-chatbot-history-sidebar group/history-sidebar relative w-full shrink-0 space-y-5 border-e px-6 py-7 sm:h-full sm:w-[440px] sm:overflow-y-auto"
-        x-data="{ mobileDropdownOpen: false }"
         :class="{ 'mobile-dropdown-open': mobileDropdownOpen }"
     >
         <x-button
@@ -58,6 +57,37 @@
             </form>
 
             @include('chatbot::home.chats-history.chats-list')
+
+            <div
+                class="lqd-ext-chatbot-history-load-wrap grid place-items-center font-medium text-heading-foreground"
+                x-ref="loadMoreWrap"
+            >
+                <x-button
+                    class="lqd-ext-chatbot-history-load-more col-start-1 col-end-1 row-start-1 row-end-1 w-full"
+                    variant="link"
+                    href="{{ route('dashboard.chatbot.conversations.with.paginate', ['page' => 1]) }}"
+                    x-ref="loadMore"
+                    x-show="!allLoaded && !fetching"
+                >
+                    {{ __('Load More...') }}
+                </x-button>
+                <span
+                    class="lqd-ext-chatbot-history-loading col-start-1 col-end-1 row-start-1 row-end-1 inline-flex gap-2"
+                    x-show="!allLoaded && fetching"
+                    x-ref="loading"
+                >
+                    {{ __('Loading') }}
+                    <x-tabler-refresh class="size-4 animate-spin" />
+                </span>
+                <span
+                    class="lqd-ext-chatbot-history-all-loaded col-start-1 col-end-1 row-start-1 row-end-1 inline-flex gap-2"
+                    x-ref="allLoaded"
+                    x-show="allLoaded"
+                >
+                    {{ __('All Items Loaded') }}
+                    <x-tabler-check class="size-4" />
+                </span>
+            </div>
         </div>
     </div>
 
@@ -162,7 +192,7 @@
 
         <div
             class="invisible absolute inset-0 z-1 grid place-items-center opacity-0 backdrop-blur-md transition-all"
-            :class="{ 'opacity-0': !fetching, 'invisible': !fetching }"
+            :class="{ 'opacity-0': !firstLoading, 'invisible': !firstLoading }"
         >
             <x-tabler-loader-2 class="size-8 animate-spin text-primary" />
         </div>
@@ -179,8 +209,36 @@
                     activeChat: null,
                     fetching: true,
                     lastTimeFetch: null,
+                    currentPage: 1,
+                    allLoaded: false,
+                    /**
+                     * @type {IntersectionObserver}
+                     */
+                    loadMoreIO: null,
+                    mobileDropdownOpen: false,
+                    firstLoading: true,
                     init() {
                         Alpine.store('externalChatbotHistory', this);
+                    },
+                    setupLoadMoreIO() {
+                        const load = async (entry) => {
+                            this.currentPage += 1;
+                            this.$refs.loadMore.href = this.$refs.loadMore.href.replace(/page=\d+/, `page=${this.currentPage}`);
+
+                            await this.fetchChats();
+                        };
+
+                        this.loadMoreIO = new IntersectionObserver(async ([entry], observer) => {
+                            if (entry.isIntersecting && !this.fetching && !this.allLoaded) {
+                                await load();
+
+                                if (entry.isIntersecting && !this.fetching && !this.allLoaded) {
+                                    await load();
+                                }
+                            }
+                        });
+
+                        this.loadMoreIO.observe(this.$refs.loadMoreWrap);
                     },
                     async setOpen(open) {
                         if (this.open === open) return;
@@ -211,24 +269,19 @@
                             navbarExpander.style.opacity = this.open ? 0 : 1;
                         }
 
-                        if (
-                            this.open &&
-                            (
-                                !this.lastTimeFetch ||
-                                // revalidate list of chats every 30 seconds
-                                (
-                                    this.lastTimeFetch &&
-                                    (new Date().getTime() - this.lastTimeFetch) > 30000
-                                )
-                            )
-                        ) {
+                        if (this.open) {
                             await this.fetchChats();
+                            this.setupLoadMoreIO();
                         }
                     },
                     async fetchChats() {
+                        if (this.allLoaded) {
+                            return this.fetching = false;
+                        }
+
                         this.fetching = true;
 
-                        const res = await fetch('{{ route('dashboard.chatbot.conversations') }}', {
+                        const res = await fetch(this.$refs.loadMore.href, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -249,13 +302,21 @@
 
                         this.lastTimeFetch = new Date().getTime();
 
-                        this.chatsList = conversations.reverse();
+                        this.chatsList.push(...conversations.reverse());
 
                         if (!this.activeChat && conversations.length) {
                             this.activeChat = conversations[0].id;
                         }
 
+                        if (this.currentPage >= data.meta.last_page) {
+                            this.allLoaded = true;
+                        }
+
                         this.fetching = false;
+
+                        this.firstLoading = false;
+
+                        this.scrollMessagesToBottom();
                     },
                     async handleSearch() {
                         // TODO: Implement search logic
@@ -283,6 +344,9 @@
 
                         triggerParent.classList.add('lqd-active');
 
+                        this.scrollMessagesToBottom();
+                    },
+                    scrollMessagesToBottom() {
                         this.$nextTick(() => {
                             this.$refs.historyMessages.scrollTo({
                                 top: this.$refs.historyMessages.scrollHeight,

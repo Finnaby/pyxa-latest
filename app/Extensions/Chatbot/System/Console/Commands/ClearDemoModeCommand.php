@@ -21,7 +21,7 @@ class ClearDemoModeCommand extends Command
 
         Log::info('Clear chatbot demo mode new');
 
-        Chatbot::query()->where('id', '>', 4)
+        Chatbot::query()->where('is_demo', '=', 0)
             ->where('created_at', '<', now()->subMinutes(30))
             ->delete();
     }

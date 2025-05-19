@@ -78,8 +78,19 @@
                                         'attrs' => [
                                             '@click.prevent' => 'setActiveChatbot(chatbot.id, 4, true);',
                                         ],
-                                    ],
+                                    ]
                                 ];
+
+								if (\App\Extensions\Chatbot\System\Helpers\ChatbotHelper::existChannels()){
+									$dropdown_items[] = [
+										'label' => __('Channel'),
+                                        'link' => '#',
+                                        'attrs' => [
+                                            '@click.prevent' => 'setActiveChatbot(chatbot.id, 5, true);',
+                                        ],
+									];
+								}
+
                             @endphp
                             <ul class="py-1 text-xs font-medium">
                                 @foreach ($dropdown_items as $dropdown_item)
@@ -157,30 +168,55 @@
                     ></span>
                 </p>
 
-                <div
-                    class="inline-flex items-center gap-1.5 rounded-full border px-1.5 py-1 text-[12px] font-medium leading-none transition-all [&.lqd-active]:text-green-500 [&.lqd-passive]:bg-heading-foreground/5 [&.lqd-passive]:text-heading-foreground"
-                    :class="{
+				<div class="flex justify-between">
+					<div
+						class="inline-flex items-center gap-1.5 rounded-full border px-1.5 py-1 text-[12px] font-medium leading-none transition-all [&.lqd-active]:text-green-500 [&.lqd-passive]:bg-heading-foreground/5 [&.lqd-passive]:text-heading-foreground"
+						:class="{
                         'lqd-active': chatbot.active,
                         'lqd-passive': !chatbot.active
                     }"
-                >
-                    <x-tabler-check
-                        class="size-4"
-                        ::class="{ hidden: !chatbot.active }"
-                    />
-                    <span
-                        class="inline-flex min-h-4 items-center"
-                        :class="{ hidden: !chatbot.active }"
-                    >
+					>
+						<x-tabler-check
+							class="size-4"
+							::class="{ hidden: !chatbot.active }"
+						/>
+						<span
+							class="inline-flex min-h-4 items-center"
+							:class="{ hidden: !chatbot.active }"
+						>
                         @lang('Active')
-                    </span>
-                    <span
-                        class="inline-flex min-h-4 items-center"
-                        :class="{ hidden: chatbot.active }"
-                    >
-                        @lang('Passive')
-                    </span>
-                </div>
+						</span>
+							<span
+								class="inline-flex min-h-4 items-center"
+								:class="{ hidden: chatbot.active }"
+							>
+							@lang('Passive')
+						</span>
+					</div>
+					<div class="flex gap-1">
+						<template x-if="chatbot?.channels?.some(c => c.channel === 'whatsapp')">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3 21L4.65 17.2C3.38766 15.408 2.82267 13.217 3.06104 11.0381C3.29942 8.85915 4.32479 6.84211 5.94471 5.36549C7.56463 3.88887 9.66775 3.05418 11.8594 3.01807C14.051 2.98195 16.1805 3.7469 17.8482 5.16934C19.5159 6.59179 20.6071 8.57395 20.9172 10.7438C21.2272 12.9137 20.7347 15.1222 19.5321 16.9547C18.3295 18.7873 16.4994 20.118 14.3854 20.6971C12.2713 21.2762 10.0186 21.0639 8.05 20.1L3 21Z" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M9 10C9 10.1326 9.05268 10.2598 9.14645 10.3536C9.24021 10.4473 9.36739 10.5 9.5 10.5C9.63261 10.5 9.75979 10.4473 9.85355 10.3536C9.94732 10.2598 10 10.1326 10 10V9C10 8.86739 9.94732 8.74021 9.85355 8.64645C9.75979 8.55268 9.63261 8.5 9.5 8.5C9.36739 8.5 9.24021 8.55268 9.14645 8.64645C9.05268 8.74021 9 8.86739 9 9V10ZM9 10C9 11.3261 9.52678 12.5979 10.4645 13.5355C11.4021 14.4732 12.6739 15 14 15M14 15H15C15.1326 15 15.2598 14.9473 15.3536 14.8536C15.4473 14.7598 15.5 14.6326 15.5 14.5C15.5 14.3674 15.4473 14.2402 15.3536 14.1464C15.2598 14.0527 15.1326 14 15 14H14C13.8674 14 13.7402 14.0527 13.6464 14.1464C13.5527 14.2402 13.5 14.3674 13.5 14.5C13.5 14.6326 13.5527 14.7598 13.6464 14.8536C13.7402 14.9473 13.8674 15 14 15Z" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</template>
+						<template x-if="chatbot?.channels?.some(c => c.channel === 'telegram')">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M15 10L11 14L17 20L21 4L3 11L7 13L9 19L12 15" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</template>
+						<span>
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M21 12C21 10.22 20.4722 8.47991 19.4832 6.99987C18.4943 5.51983 17.0887 4.36628 15.4442 3.68509C13.7996 3.0039 11.99 2.82567 10.2442 3.17294C8.49836 3.5202 6.89472 4.37737 5.63604 5.63604C4.37737 6.89472 3.5202 8.49836 3.17294 10.2442C2.82567 11.99 3.0039 13.7996 3.68509 15.4442C4.36628 17.0887 5.51983 18.4943 6.99987 19.4832C8.47991 20.4722 10.22 21 12 21" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M3.60156 9H20.4016" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M3.60156 15H12.0016" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M11.5778 3C9.89314 5.69961 9 8.81787 9 12C9 15.1821 9.89314 18.3004 11.5778 21" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M12.5 3C14.219 5.755 15 8.876 15 12" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M18 21V14M18 14L21 17M18 14L15 17" stroke="#41444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</span>
+					</div>
+				</div>
             </x-card>
         </template>
     </div>

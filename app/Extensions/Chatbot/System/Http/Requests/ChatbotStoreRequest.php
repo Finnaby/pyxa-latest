@@ -19,6 +19,7 @@ class ChatbotStoreRequest extends FormRequest
             'title'                         => ['required', 'string'],
             'bubble_message'                => ['required', 'string'],
             'welcome_message'               => ['required', 'string'],
+            'interaction_type'              => ['required', 'string'],
             'instructions'                  => Helper::appIsNotDemo() ? ['required', 'string'] : ['sometimes', 'nullable', 'string'],
             'do_not_go_beyond_instructions' => ['required', 'boolean'],
             'language'                      => ['sometimes', 'nullable', 'string'],

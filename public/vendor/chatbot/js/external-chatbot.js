@@ -1,4 +1,6 @@
 (async function () {
+
+
 	const scriptTag = document.currentScript;
 	const url = new URL(scriptTag.getAttribute('src'));
 	const iframeWidth = scriptTag.getAttribute('data-iframe-width');
@@ -9,9 +11,10 @@
 	const iFrameUrl = `${chatbotHostOrigin}/chatbot/${chatBotUuid}/frame`;
 	const jsonUrl = `${chatbotHostOrigin}/api/v2/chatbot/${chatBotUuid}`;
 
-	if (document.querySelector('html')?.getAttribute('lang')) {
 
-		const htmlLang = document.querySelector('html').getAttribute('lang');
+	if (document.querySelector("html")?.getAttribute("lang")) {
+
+		const htmlLang = document.querySelector("html").getAttribute("lang");
 
 		if (htmlLang) {
 			language = htmlLang;
@@ -290,6 +293,7 @@
     <button
         id="lqd-ext-chatbot-trigger"
         type="button"
+        @click.prevent="toggleWindowState()"
     >
         <img
             id="lqd-ext-chatbot-trigger-img"

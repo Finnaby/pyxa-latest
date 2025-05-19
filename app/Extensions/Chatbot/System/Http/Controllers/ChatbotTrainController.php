@@ -107,7 +107,6 @@ class ChatbotTrainController extends Controller
 
     public function trainText(TextRequest $request): JsonResponse|AnonymousResourceCollection
     {
-
         if (Helper::appIsDemo()) {
             return response()->json([
                 'type'    => 'error',

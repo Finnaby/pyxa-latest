@@ -8,6 +8,7 @@ use App\Extensions\Chatbot\System\Http\Resources\Api\ChatbotHistoryResource;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use JsonSerializable;
 
 class ChatbotConversationResource extends JsonResource
@@ -16,6 +17,8 @@ class ChatbotConversationResource extends JsonResource
     {
         return [
             'id'                => $this->getAttribute('id'),
+            'chatbot_channel'   => $this->getAttribute('chatbot_channel'),
+            'color'             => Arr::random(['#879EC4', '#018a1a', '#7f00c8', '#e633ec']),
             'ip_address'        => $this->getAttribute('ip_address'),
             'conversation_name' => $this->getAttribute('conversation_name'),
             'chatbot'           => ChatbotResource::make($this->getAttribute('chatbot')),

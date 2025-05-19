@@ -7,7 +7,7 @@
 @endphp
 
 @extends('panel.layout.app', ['disable_tblr' => true])
-@section('title', __('MagicBots'))
+@section('title', $setting->site_name . __('Bots'))
 @section('titlebar_subtitle')
     {{ __('View and manage external chatbots') }}
 @endsection
@@ -76,17 +76,17 @@
                     testIframeHeight: 745,
                     defaultFormInputs: {
                         id: '',
-						interaction_type: 'automatic_response',
-                        title: '{{ __('MagicBot') }}',
+                        interaction_type: 'automatic_response',
+                        title: '{{ $setting->site_name . __('Bots') }}',
                         bubble_message: '{{ __('Hey there, How can I help you?') }}',
                         welcome_message: '{{ __('Hi, how can I help you?') }}',
-						connect_message: '{{ __('I’ve forwarded your request to a human agent. An agent will connect with you as soon as possible.') }}',
+                        connect_message: '{{ __('I’ve forwarded your request to a human agent. An agent will connect with you as soon as possible.') }}',
                         instructions: '',
                         do_not_go_beyond_instructions: 0,
                         language: '',
                         ai_model: 'gpt-3.5-turbo',
                         logo: '',
-                        avatar: (@json($avatars->random()))?.avatar || '{{ $user_avatar }}',
+                        avatar: (@json($avatars?->isEmpty() ? [] : $avatars->random()))?.avatar || '{{ $user_avatar }}',
                         color: '#272733',
                         show_logo: true,
                         show_date_and_time: true,
@@ -95,7 +95,7 @@
                         trigger_avatar_size: '60px',
                         position: 'right',
                         active: true,
-						footer_link: '',
+                        footer_link: '',
                     },
                     formErrors: {},
                     init() {
@@ -137,7 +137,8 @@
 
                         this.formErrors = {};
 
-                        document.documentElement.style.overflow = this.activeChatbot.id ? 'hidden' : '';
+                        document.documentElement.style.overflow = this.activeChatbot.id ? 'hidden' :
+                            '';
 
                         if (window.innerWidth >= 992) {
 
@@ -146,15 +147,18 @@
                             }
 
                             if (pageContentWrap) {
-                                pageContentWrap.style.paddingInlineStart = this.activeChatbot.id ? 'var(--navbar-width)' : '';
+                                pageContentWrap.style.paddingInlineStart = this.activeChatbot.id ?
+                                    'var(--navbar-width)' : '';
                             }
 
                             if (topNoticeBar) {
-                                topNoticeBar.style.visibility = this.activeChatbot.id ? 'hidden' : '';
+                                topNoticeBar.style.visibility = this.activeChatbot.id ? 'hidden' :
+                                    '';
                             }
 
                             if (navbarExpander) {
-                                navbarExpander.style.visibility = this.activeChatbot.id ? 'hidden' : '';
+                                navbarExpander.style.visibility = this.activeChatbot.id ? 'hidden' :
+                                    '';
                                 navbarExpander.style.opacity = this.activeChatbot.id ? 0 : 1;
                             }
                         }
@@ -208,7 +212,8 @@
                         await this.updateChatbot(chatbot);
                     },
                     async deleteChatbot(event) {
-                        if (!confirm('{{ __('Are you sure you want to delete this chatbot?') }}')) {
+                        if (!confirm(
+                                '{{ __('Are you sure you want to delete this chatbot?') }}')) {
                             return;
                         }
 
@@ -229,7 +234,11 @@
                         });
 
                         if (!res.ok) {
-                            toastr.error('{{ __('Failed to delete chatbot') }}');
+
+                            const data = await res.json();
+
+                            toastr.error(data.message);
+
                             return;
                         }
 
@@ -247,7 +256,8 @@
                         this.submittingData = false;
 
                         toastr.clear();
-                        toastr.success(data.message || '{{ __('Chatbot deleted successfully') }}');
+                        toastr.success(data.message ||
+                            '{{ __('Chatbot deleted successfully') }}');
                     },
                     training: {
                         activeTab: 'website',
@@ -331,7 +341,8 @@
                             return;
                         }
 
-                        const chatbotIndex = this.chatbots.data.findIndex(c => c.id === chatbotData.id);
+                        const chatbotIndex = this.chatbots.data.findIndex(c => c.id ===
+                            chatbotData.id);
 
                         if (chatbotIndex !== -1) {
                             this.chatbots.data[chatbotIndex] = {

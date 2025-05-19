@@ -83,7 +83,7 @@ class EmbedingService
                     $chunk = '';
                 }
                 // Split the long word into smaller parts
-                $chunks = array_merge($chunks, str_split($word, $maxTokens));
+                $chunks = array_merge($chunks, mb_str_split($word, $maxTokens));
             } elseif (strlen($chunk . ' ' . $word) > $maxTokens) {
                 $chunks[] = trim($chunk);
                 $chunk = $word;

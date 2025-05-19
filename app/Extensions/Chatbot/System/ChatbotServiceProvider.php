@@ -8,16 +8,15 @@ use App\Extensions\Chatbot\System\Http\Controllers\Api\ChatbotApplicationControl
 use App\Extensions\Chatbot\System\Http\Controllers\Api\ChatbotFrameController;
 use App\Extensions\Chatbot\System\Http\Controllers\AvatarController;
 use App\Extensions\Chatbot\System\Http\Controllers\ChatbotController;
+use App\Extensions\Chatbot\System\Http\Controllers\ChatbotMultiChannelController;
 use App\Extensions\Chatbot\System\Http\Controllers\ChatbotTrainController;
 use App\Extensions\Chatbot\System\Http\Middleware\LanguageMiddleware;
 use App\Helpers\Classes\Helper;
 use App\Http\Middleware\CheckTemplateTypeAndPlan;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class ChatbotServiceProvider extends ServiceProvider
 {
@@ -121,9 +120,15 @@ class ChatbotServiceProvider extends ServiceProvider
                 $router->post('{chatbot:uuid}/session/{sessionId}/conversation/{chatbotConversation}/messages', 'storeMessage')->name('conversion.store.message');
             })
             ->group([
-                'prefix'     => LaravelLocalization::setLocale(),
-                'middleware' => ['web', 'auth', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+                'middleware' => ['web', 'auth'],
             ], function (Router $route) {
+                $route->controller(ChatbotMultiChannelController::class)
+                    ->name('dashboard.chatbot-multi-channel.')
+                    ->prefix('dashboard/chatbot-multi-channel')
+                    ->group(function () {
+                        Route::any('', 'index')->name('index');
+                        Route::POST('delete', 'delete')->name('delete');
+                    });
                 $route
                     ->controller(ChatbotController::class)
                     ->prefix('dashboard/chatbot')
@@ -136,11 +141,11 @@ class ChatbotServiceProvider extends ServiceProvider
 
                         // conversation
                         $route->get('conversations', 'conversations')->name('conversations');
+                        $route->get('conversations-with-paginate', 'conversationsWithPaginate')->name('conversations.with.paginate');
 
                         // ended routes
                         $route->get('{chatbot}/enbed', 'enbed')->name('enbed');
                     });
-
                 $route
                     ->controller(ChatbotTrainController::class)
                     ->prefix('dashboard/chatbot/train')
@@ -156,7 +161,6 @@ class ChatbotServiceProvider extends ServiceProvider
                         $route->post('text', 'trainText')->name('text');
                         $route->post('qa', 'trainQa')->name('qa');
                     });
-
                 $route->post('dashboard/chatbot/avatar/upload', AvatarController::class)
                     ->name('dashboard.chatbot.upload.avatar');
             });

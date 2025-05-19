@@ -6,13 +6,13 @@ use App\Extensions\Chatbot\System\Http\Requests\ChatbotCustomizeRequest;
 use App\Extensions\Chatbot\System\Http\Requests\ChatbotStoreRequest;
 use App\Extensions\Chatbot\System\Http\Resources\Admin\ChatbotConversationResource;
 use App\Extensions\Chatbot\System\Http\Resources\Admin\ChatbotResource;
+use App\Extensions\Chatbot\System\Models\Chatbot;
 use App\Extensions\Chatbot\System\Services\ChatbotService;
 use App\Helpers\Classes\Helper;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class ChatbotController extends Controller
@@ -23,16 +23,25 @@ class ChatbotController extends Controller
     {
         if (method_exists(Helper::class, 'appIsDemoForChatbot')) {
             if (Helper::appIsDemoForChatbot()) {
-                // Clear chatbot for demo mode
-                Artisan::call('app:clear-chatbot-demo-mode');
+                $this->clearDemoData();
             }
         }
 
+        $externalChatbots = $request->user()->externalChatbots->pluck('id')->toArray();
+        $unreadAgentMessagesCount = $this->service->unreadAgentMessagesCount($externalChatbots);
+        $unreadAiBotMessagesCount = $this->service->unreadAiBotMessagesCount($externalChatbots);
+        $allMessagesCount = $this->service->allMessagesCount($externalChatbots);
+
         return view('chatbot::index', [
             'chatbots' => $this->service->query()
+                ->with('channels:id,chatbot_id,channel')
                 ->where('user_id', Auth::id())
-                ->orderBy('created_at', 'desc')->paginate(perPage: 10),
-            'avatars'  => $this->service->avatars(),
+                ->orderBy('created_at', 'desc')
+                ->paginate(perPage: 10),
+            'avatars'                  => $this->service->avatars(),
+            'unreadAgentMessagesCount' => $unreadAgentMessagesCount,
+            'unreadAiBotMessagesCount' => $unreadAiBotMessagesCount,
+            'allMessagesCount'         => $allMessagesCount,
         ]);
     }
 
@@ -46,6 +55,15 @@ class ChatbotController extends Controller
     public function update(ChatbotCustomizeRequest $request): JsonResponse|ChatbotResource
     {
         $data = $request->validated();
+
+        $chatbot = $this->service->query()->findOrFail($data['id']);
+
+        if ($chatbot->getAttribute('is_demo')) {
+            return response()->json([
+                'type'    => 'error',
+                'message' => 'This feature is disabled in Demo version.',
+            ], 403);
+        }
 
         $chatbot = $this->service->update($data['id'], $data);
 
@@ -61,18 +79,27 @@ class ChatbotController extends Controller
         return ChatbotConversationResource::collection($conversations);
     }
 
+    public function conversationsWithPaginate(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    {
+        $chatbots = $request->user()->externalChatbots->pluck('id')->toArray();
+
+        $conversations = $this->service->conversationsWithPaginate($chatbots);
+
+        return ChatbotConversationResource::collection($conversations);
+    }
+
     public function delete(Request $request): JsonResponse
     {
-        if (Helper::appIsDemo()) {
+        $request->validate(['id' => 'required']);
+
+        $chatbot = $this->service->query()->findOrFail($request->get('id'));
+
+        if ($chatbot->getAttribute('is_demo')) {
             return response()->json([
                 'type'    => 'error',
                 'message' => 'This feature is disabled in Demo version.',
             ], 403);
         }
-
-        $request->validate(['id' => 'required']);
-
-        $chatbot = $this->service->query()->findOrFail($request->get('id'));
 
         if ($chatbot->getAttribute('user_id') === Auth::id()) {
             $chatbot->delete();
@@ -85,5 +112,12 @@ class ChatbotController extends Controller
             'type'    => 'success',
             'status'  => 200,
         ]);
+    }
+
+    public function clearDemoData(): void
+    {
+        Chatbot::query()->where('is_demo', '=', 0)
+            ->where('created_at', '<', now()->subMinutes(30))
+            ->delete();
     }
 }

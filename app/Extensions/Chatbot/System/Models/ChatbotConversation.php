@@ -12,17 +12,31 @@ class ChatbotConversation extends Model
     protected $table = 'ext_chatbot_conversations';
 
     protected $fillable = [
+        'chatbot_channel',
+        'chatbot_channel_id',
+        'customer_channel_id',
         'ip_address',
         'conversation_name',
         'chatbot_id',
         'session_id',
         'connect_agent_at',
+        'customer_payload',
+        'is_showed_on_history',
+        'last_activity_at',
     ];
 
     protected $casts = [
-        'chatbot_id' => 'integer',
-        'session_id' => 'string',
+        'chatbot_id'           => 'integer',
+        'session_id'           => 'string',
+        'customer_payload'     => 'json',
+        'is_showed_on_history' => 'boolean',
+        'last_activity_at'	    => 'datetime',
     ];
+
+    public function chatbotChannel(): BelongsTo
+    {
+        return $this->belongsTo(ChatbotChannel::class, 'chatbot_channel_id');
+    }
 
     public function sessionId(): string
     {

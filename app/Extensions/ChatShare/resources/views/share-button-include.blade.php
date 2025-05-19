@@ -8,7 +8,7 @@
     <x-slot:trigger
         class="h-6 max-md:inline-flex max-md:size-8 max-md:items-center max-md:justify-center max-md:rounded-full max-md:bg-background max-md:p-0 max-md:text-foreground max-md:shadow-md max-md:hover:text-primary-foreground md:h-6 md:px-2 md:py-1 md:text-2xs"
         variant="primary"
-        disable-modal="{{ $app_is_demo }}"
+        disable-modal="{{ $app_is_demo ?? '' }}"
         disable-modal-message="{{ __('This feature is disabled in Demo version.') }}"
         @click.prevent="openModal, result = ''"
         title="{{ __('Share') }}"
@@ -19,7 +19,7 @@
         </span>
     </x-slot:trigger>
     <x-slot:modal
-        x-data="{ categoryId: '{{ $category->id }}', chatId: '{{ $chat->id }}', result: '' }"
+        x-data="{ categoryId: '{{ $category->id ?? '' }}', chatId: '{{ $chat->id ?? '' }}', result: '' }"
     >
         <div class="relative">
             <x-forms.input

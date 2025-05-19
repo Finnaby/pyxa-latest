@@ -45,6 +45,7 @@ class Chatbot extends Model
         // customization end
         'active',
         'footer_link',
+        'is_demo',
     ];
 
     protected $casts = [
@@ -57,6 +58,7 @@ class Chatbot extends Model
         'pre_defined_questions'         => 'array',
         'active'                        => 'boolean',
         'user_id'                       => 'integer',
+        'is_demo'                       => 'boolean',
     ];
 
     public function conversations(): HasMany
@@ -77,5 +79,10 @@ class Chatbot extends Model
     public function isActive(): bool
     {
         return (bool) $this->active;
+    }
+
+    public function channels(): HasMany
+    {
+        return $this->hasMany(ChatbotChannel::class, 'chatbot_id', 'id');
     }
 }

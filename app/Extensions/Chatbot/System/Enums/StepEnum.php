@@ -12,6 +12,7 @@ enum StepEnum: string
     case customize = 'customize';
     case train = 'train';
     case embed = 'embed';
+    case channel = 'channel';
 
     public static function isInValid(string $step): bool
     {

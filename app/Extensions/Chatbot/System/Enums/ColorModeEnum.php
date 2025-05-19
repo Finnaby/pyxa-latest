@@ -9,6 +9,8 @@ enum ColorModeEnum: string
     use EnumTo;
 
     case solid = 'solid';
+
     case gradient = 'gradient';
+
     case none = 'none';
 }

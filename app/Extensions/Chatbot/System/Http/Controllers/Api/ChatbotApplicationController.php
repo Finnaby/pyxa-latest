@@ -65,7 +65,7 @@ class ChatbotApplicationController extends Controller
                 if ($chatbot->getAttribute('connect_message')) {
                     $chatbotHistory = $this->insertMessage(
                         conversation: $conversation,
-                        message: $chatbot->getAttribute('connect_message'),
+                        message: trans($chatbot->getAttribute('connect_message')),
                         role: 'assistant',
                         model: $chatbot->getAttribute('ai_model'),
                         forcePanelEvent: true
@@ -91,10 +91,12 @@ class ChatbotApplicationController extends Controller
     {
         $chatbotConversation = ChatbotConversation::query()
             ->create([
-                'ip_address'       => request()->header('cf-connecting-ip') ?: request()->ip(),
-                'chatbot_id'       => $chatbot->getAttribute('id'),
-                'session_id'       => $sessionId,
-                'connect_agent_at' => $chatbot->getAttribute('interaction_type') === InteractionType::HUMAN_SUPPORT ? now() : null,
+                'is_showed_on_history' => false,
+                'ip_address'           => request()->header('cf-connecting-ip') ?: request()->ip(),
+                'chatbot_id'           => $chatbot->getAttribute('id'),
+                'session_id'           => $sessionId,
+                'connect_agent_at'     => $chatbot->getAttribute('interaction_type') === InteractionType::HUMAN_SUPPORT ? now() : null,
+                'last_activity_at'     => now(),
             ]);
 
         $this->insertMessage(
@@ -149,6 +151,10 @@ class ChatbotApplicationController extends Controller
         }
 
         $userMessage = $this->insertMessage($chatbotConversation, $request->validated('prompt'), 'user', $chatbot->getAttribute('ai_model'));
+
+        if (! $chatbotConversation->getAttribute('is_showed_on_history')) {
+            $chatbotConversation->update(['is_showed_on_history' => true]);
+        }
 
         if ($chatbotConversation->getAttribute('connect_agent_at')) {
             return ChatbotHistoryResource::make($userMessage)->additional([

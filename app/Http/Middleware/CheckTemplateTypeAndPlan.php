@@ -53,6 +53,7 @@ class CheckTemplateTypeAndPlan
             'dashboard.user.automation.index'            => 'ai_social_media_extension',
             'dashboard.user.automation.list'             => 'ai_social_media_extension',
             'dashboard.chatbot.index'                    => 'ext_chat_bot',
+            'dashboard.user.seo.index'                   =>  'seo-GPLIEf'
         ];
         if (array_key_exists($request->route()?->getName(), $routesDoesNotHaveAnySlug)) {
             $slug = $routesDoesNotHaveAnySlug[$request->route()?->getName()];
@@ -72,7 +73,7 @@ class CheckTemplateTypeAndPlan
             return $openAi?->getAttribute('premium') !== 1;
         }
         // now even if slug exist in route, openai table does not contain all slugs
-        $slugsNotInOpenAiGenerator = ['ai_chat_all', 'ai_editor', 'ai_writer', 'ai_social_media_extension', 'ext_chat_bot', 'brand_voice', 'photo_studio_extension'];
+        $slugsNotInOpenAiGenerator = ['ai_chat_all', 'ai_editor', 'ai_writer', 'ai_social_media_extension', 'ext_chat_bot', 'brand_voice', 'photo_studio_extension', 'support'];
         // if openai record exist or slug is in the list of slugs that are not in openai generator
         if ($openAi || in_array($slug, $slugsNotInOpenAiGenerator, true)) {
             $setting = $this->settingSlug($slug);

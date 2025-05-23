@@ -9,6 +9,7 @@ use App\Extensions\AISocialMedia\System\Services\AutomationService;
 use App\Extensions\AISocialMedia\System\Services\Contracts\BaseService;
 use App\Helpers\Classes\ApiHelper;
 use App\Models\Setting;
+use App\Models\Usage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -65,6 +66,7 @@ class UserPostJob implements ShouldQueue
             $driver->redirectIfNoCreditBalance();
 
             $driver->decreaseCredit();
+            Usage::getSingle()->updateWordCounts($driver->calculate());
 
             return $completion->choices[0]->message->content;
         }

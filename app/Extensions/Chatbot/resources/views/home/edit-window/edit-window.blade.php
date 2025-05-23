@@ -69,7 +69,7 @@
                                         />
                                     </svg>
                                 </span>
-                                @lang($step)
+                                @lang(ucfirst($step))
                             </button>
                         @endforeach
                     </div>

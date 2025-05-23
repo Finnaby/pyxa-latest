@@ -3,7 +3,7 @@
 @endphp
 
 @extends('panel.layout.app', ['disable_tblr' => true])
-@section('title', 'AI Social Media1')
+@section('title', __('AI Social Media'))
 @section('titlebar_actions', '')
 
 @section('additional_css')
@@ -43,7 +43,7 @@
     </style>
 @endsection
 
-@section('before_content_container')
+@section('before-content-container')
     <div class="flex flex-col border-t">
         <div class="grid grid-flow-col overflow-x-auto text-sm font-semibold max-lg:[grid-template-columns:repeat(6,200px)] lg:grid-cols-6">
             @foreach ($steps_indicators as $step_indicator)
@@ -75,7 +75,7 @@
 @section('content')
     <div class="py-10">
         <x-card class="mx-auto w-full lg:w-5/12">
-            @includeFirst(['ai-social-media::steps.step-'.$step , 'panel.admin.custom.automation.steps.step-' . $step, 'vendor.empty'])
+            @includeFirst(['ai-social-media::steps.step-' . $step, 'panel.admin.custom.automation.steps.step-' . $step, 'vendor.empty'])
         </x-card>
     </div>
 

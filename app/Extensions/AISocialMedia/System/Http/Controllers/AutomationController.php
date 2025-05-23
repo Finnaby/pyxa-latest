@@ -14,6 +14,7 @@ use App\Models\Company;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\SettingTwo;
+use App\Models\Usage;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -340,6 +341,7 @@ class AutomationController extends Controller
                 $driver = Entity::driver(EntityEnum::tryFrom($this->settings->openai_default_model));
                 $driver->setCalculatedInputCredit(2);
                 $driver->input($data)->calculateCredit()->decreaseCredit();
+                Usage::getSingle()->updateWordCounts($driver->calculate());
             }
             $wordModelsCredits = EntityStats::word()->forUser($user)->totalCredits();
             $imageModelsCredits = EntityStats::image()->forUser($user)->totalCredits();

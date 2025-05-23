@@ -19,7 +19,6 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class AISocialMediaServiceProvider extends ServiceProvider implements UninstallExtensionServiceProviderInterface
 {
@@ -100,8 +99,7 @@ class AISocialMediaServiceProvider extends ServiceProvider implements UninstallE
     {
         $this->router()
             ->group([
-                'prefix'     => LaravelLocalization::setLocale(),
-                'middleware' => ['web', 'auth', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+                'middleware' => ['web', 'auth'],
             ], function (Router $router) {
 
                 $router->group([
@@ -173,7 +171,7 @@ class AISocialMediaServiceProvider extends ServiceProvider implements UninstallE
                                                 Route::get('delete/{id?}', 'campaignDelete')->name('delete');
                                                 Route::post('save', 'campaignAddOrUpdateSave')->name('campaignAddOrUpdateSave');
                                                 Route::get('get-target/{campaign_id}', 'getCampaignTarget')->name('getCampaignTarget');
-                                                Route::post('genContent', 'generateCampaignContent')->name('genContent');
+                                                //                                                Route::post('genContent', 'generateCampaignContent')->name('genContent');
                                                 Route::post('genTopics', 'generateCampaignTopics')->name('genTopics');
                                             });
 

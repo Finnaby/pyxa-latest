@@ -18,7 +18,6 @@
                             {{ __('Disconnect') }}
                         </x-button>
                     @endif
-                    
                 </h2>
 
                 <form

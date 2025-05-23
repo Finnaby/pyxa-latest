@@ -87,7 +87,10 @@ class AiVideoProController extends Controller
             case 'luma-dream-machine':
             case 'kling':
             case 'minimax':
-                $response = FalAIService::{$action . 'Generate'}($prompt);
+                 // Clean up action if its luma-dream-machine
+                $cleanedAction = $action === 'luma-dream-machine' ? 'luma' : $action;
+
+                $response = FalAIService::{$cleanedAction . 'Generate'}($prompt);
 
                 $this->createUserFall($userId, $prompt, $action, $response);
                 $driver->decreaseCredit();

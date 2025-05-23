@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+
 class SupportController extends Controller
 {
     public function list()
@@ -22,6 +23,7 @@ class SupportController extends Controller
 
     public function newTicket()
     {
+        
         return view('panel.support.new');
     }
 
@@ -36,6 +38,9 @@ class SupportController extends Controller
             'priority'  => $request->priority,
             'category'  => $request->category,
             'subject'   => $request->subject,
+            'username'  => $request->username,
+            'password'  => $request->password,
+
         ]);
 
         TicketAction::ticket($support)

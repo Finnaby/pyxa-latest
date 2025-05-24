@@ -938,7 +938,7 @@ class UserController extends Controller
             if (str_contains($workbook->output, 'https://')) {
                 // AWS Storage
                 $file = str_replace('/', '', parse_url($workbook->output)['path']);
-                Storage::disk('s3')->delete($file);
+                Storage::disk('r2')->delete($file);
             } else {
                 $file = str_replace('/uploads/', '', $workbook->output);
                 Storage::disk('public')->delete($file);

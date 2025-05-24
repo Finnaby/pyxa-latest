@@ -83,7 +83,7 @@
                         ['name' => 'ULTIMATE CREATOR', 'price' => '99.99', 'url' => 'https://pyxa.ai'],
                         ['name' => 'PREMIUM CREATOR', 'price' => '149.99', 'url' => 'https://pyxa.ai'],
                         ['name' => 'UNLIMITED WORD/IMAGES FOR LIFE', 'price' => '249.99', 'url' => 'https://pyxa.ai/standalone-words-images-chatbot'],
-                        ['name' => 'UNLIMITED WORDS FOR LIFE', 'price' => '149.00', 'url' => 'https://pyxa.ai/standalone-words-ds'],
+                        ['name' => 'UNLIMITED WORDS FOR LIFE', 'price' => '149.00', 'url' => 'https://pyxa.ai/pyxa-unlimited-words'],
                         ['name' => 'AI WHISPERER (E-BOOK)', 'price' => '49.00', 'url' => 'https://pyxa.ai/standalone-ebook'],
                     ];
                 @endphp

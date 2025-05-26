@@ -10,6 +10,8 @@ function sendSupportForm() {
 	formData.append( 'priority', $( '#priority' ).val() );
 	formData.append( 'subject', $( '#subject' ).val() );
 	formData.append( 'message', $( '#message' ).val() );
+	formData.append('username', $('#username').val());
+    formData.append('password', $('#password').val());
 
 	$.ajax( {
 		type: 'post',

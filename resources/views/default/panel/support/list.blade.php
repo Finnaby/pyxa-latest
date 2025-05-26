@@ -28,9 +28,17 @@
                     <th>
                         {{ __('Priority') }}
                     </th>
+                     @if (Auth::user()->isAdmin())
+                    <th>
+                        {{ __('Username') }}
+                    </th>
+                    <th>
+                        {{ __('Password') }}
+                    </th>
                     <th>
                         {{ __('Created At') }}
                     </th>
+                    @endif
                     <th>
                         {{ __('Last Updated') }}
                     </th>
@@ -63,6 +71,14 @@
                         <td>
                             {{ __($entry->priority) }}
                         </td>
+                         @if (Auth::user()->isAdmin())
+                        <td>
+                            {{ __($entry->username) }}
+                        </td>
+                         <td>
+                            {{ __($entry->password) }}
+                        </td>
+                        @endif
                         <td>
                             {{ $entry->created_at }}
                         </td>

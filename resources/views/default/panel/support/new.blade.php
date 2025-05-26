@@ -75,6 +75,26 @@
                 label="{{ __('Message') }}"
             />
 
+
+            <x-forms.input
+                class:container="w-full md:w-[48%]"
+                id="username"
+                name="username"
+                placeholder="{{ __('Enter your username') }}"
+                size="lg"
+                label="{{ __('Username') }}"
+            />
+
+            <x-forms.input
+                class:container="w-full md:w-[48%]"
+                id="password"
+                name="password"
+                type="password"
+                placeholder="{{ __('Enter your password') }}"
+                size="lg"
+                label="{{ __('Password') }}"
+            />
+
             <x-button
                 class="w-full"
                 id="support_button"

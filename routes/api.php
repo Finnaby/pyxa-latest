@@ -31,6 +31,8 @@ Route::post('update-Entity-Credits-To-Unlimited','App\Http\Controllers\Api\AuthC
 
 Route::post('update-text-models-to-unlimited','App\Http\Controllers\Api\AuthController@updateTextModelsToUnlimited');
 
+Route::post('add-credit-to-novita','App\Http\Controllers\Api\AuthController@addCreditToNovita');
+
 
 Route::prefix('auth')
     ->group(function () {

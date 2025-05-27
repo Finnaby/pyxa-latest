@@ -58,6 +58,13 @@ class AiPersonaController extends Controller
                 'message' => trans('This feature is disabled in demo mode.'),
             ]);
         }
+        
+        if (strlen($request->get('input_text')) > 2000) {
+             return response()->json([
+                'status'  => 'error',
+                'message' => trans('Speech content cannot exceed 2000 characters.'),
+            ]);
+        }
 
         $avatarSettings = [
             'type'         => 'avatar',

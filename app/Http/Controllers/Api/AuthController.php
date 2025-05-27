@@ -27,6 +27,7 @@ use App\Enums\Plan\FrequencyEnum;
 use App\Actions\CreateActivity;
 use App\Services\GatewaySelector;
 use App\Services\PaymentGateways\Contracts\CreditUpdater;
+use App\Domains\Entity\Enums\EntityEnum;
 
 class AuthController extends Controller
 {
@@ -559,6 +560,46 @@ public function addTokensToUser(Request $request)
     ], 200);
 }
 
+public function addCreditToNovita(Request $request)
+{
+    // Validate the request: At least one of the two parameters must be provided
+    $request->validate([
+        'email'       => 'required|exists:users,email',
+        'credit'   => 'integer|min:0',
+    ]);
+    
+    $user = User::where('email', $request->email)->firstOrFail();
+    
+    $credit = $request->credit;
+   
+    // Decode entity_credits if it's a string (to handle it as an array)
+    $entityCredits = $user->entity_credits ?? [];
+    if (is_string($entityCredits)) {
+        $entityCredits = json_decode($entityCredits, true);
+    }
+
+     // Ensure it's an array
+    if (!is_array($entityCredits)) {
+        $entityCredits = [];
+    }
+    
+    if(isset($entityCredits[EntityEnum::NOVITA->value])){
+        $entityCredits[EntityEnum::NOVITA->value][EntityEnum::NOVITA->value]['credit'] =  $entityCredits[EntityEnum::NOVITA->value][EntityEnum::NOVITA->value]['credit'] + $credit;
+    }
+ 
+    // Update the user's entity_credits field
+    $user->update([
+        'entity_credits' => $entityCredits,
+    ]);
+
+    // Return a success response
+    return response()->json([
+        'message' => 'Novita credit added successfully!',
+        'updated_entity_credits' => $entityCredits
+    ], 200);
+}
+
+
 public function updateEntityCreditsToUnlimited(Request $request)
 {
    
@@ -578,6 +619,10 @@ public function updateEntityCreditsToUnlimited(Request $request)
 
     // Iterate over all tool names in entity_credits and set isUnlimited to true for all models
     foreach ($entityCredits as $toolName => $models) {
+        //skip novita
+        if($toolName == EntityEnum::NOVITA->value){
+            continue;
+        }
         foreach ($models as $modelName => $modelData) {
                 if ($entityCredits[$toolName][$modelName]['credit'] > 0 && $entityCredits[$toolName][$modelName]['isUnlimited'] == false) 
                 {

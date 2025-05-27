@@ -77,6 +77,13 @@ class TTSController extends Controller
             return $this->sendErrorResponse(__('Please provide inputs.'));
         }
 
+        // Validate each speech content length
+        foreach ($speeches as $speech) {
+            if (strlen($speech['content']) > 2000) {
+                return $this->sendErrorResponse(__('Speech content cannot exceed 2000 characters.'));
+            }
+        }
+
         if ($this->settingsTwo->daily_voice_limit_enabled) {
             $limitResponse = $this->checkDailyVoiceLimit();
             if ($limitResponse !== null) {

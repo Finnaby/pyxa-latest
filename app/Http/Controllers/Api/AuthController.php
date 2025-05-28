@@ -622,14 +622,15 @@ public function updateEntityCreditsToUnlimited(Request $request)
         'stable_diffusion',
         'heygen'
     ];
+    $subModel = ['dall-e-3'];
     // Iterate over all tool names in entity_credits and set isUnlimited to true for all models
     foreach ($entityCredits as $toolName => $models) {
         if(in_array($toolName, $skipModel)){
             continue;
         }
         foreach ($models as $modelName => $modelData) {
-            if($modelName == 'dall-e-3'){
-              continue;
+            if(in_array($modelName, $subModel)){
+                continue;
             }
             if ($entityCredits[$toolName][$modelName]['credit'] > 0 && $entityCredits[$toolName][$modelName]['isUnlimited'] == false) 
             {

@@ -617,19 +617,25 @@ public function updateEntityCreditsToUnlimited(Request $request)
         $entityCredits = [];
     }
 
+    $skipModel = [
+        'novita',
+        'stable_diffusion',
+        'heygen'
+    ];
     // Iterate over all tool names in entity_credits and set isUnlimited to true for all models
     foreach ($entityCredits as $toolName => $models) {
-        //skip novita
-        if($toolName == EntityEnum::NOVITA->value){
+        if(in_array($toolName, $skipModel)){
             continue;
         }
         foreach ($models as $modelName => $modelData) {
-                if ($entityCredits[$toolName][$modelName]['credit'] > 0 && $entityCredits[$toolName][$modelName]['isUnlimited'] == false) 
-                {
-                    $entityCredits[$toolName][$modelName]['isUnlimited'] = true;
-                }
+            if($modelName == 'dall-e-3'){
+              continue;
+            }
+            if ($entityCredits[$toolName][$modelName]['credit'] > 0 && $entityCredits[$toolName][$modelName]['isUnlimited'] == false) 
+            {
+                $entityCredits[$toolName][$modelName]['isUnlimited'] = true;
+            }
         }
-        
     }
 
     // Update the user's entity_credits field

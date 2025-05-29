@@ -60,9 +60,9 @@ class AiPersonaController extends Controller
         }
         
         if (strlen($request->get('input_text')) > 2000) {
-             return response()->json([
-                'status'  => 'error',
+             return redirect()->back()->with([
                 'message' => trans('Speech content cannot exceed 2000 characters.'),
+                'type'    => 'error',
             ]);
         }
 

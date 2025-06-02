@@ -41,7 +41,7 @@
                             <p class="m-0">
                                 
                                 <span class="block font-semibold">@lang('Active Plan')</span>
-                                {{ Auth::user()->activePlan()->name  }}
+                                {{ Auth::user()->activePlan() != null ?  Auth::user()->activePlan()->name : '' }}
                             </p>
                         </div>
                     </x-card>

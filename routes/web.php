@@ -29,7 +29,7 @@ Route::get('default', static function () {
 
 Route::middleware('checkInstallation')
     ->group(static function () {
-        Route::get('', IndexController::class)->name('index');
+        Route::get('', IndexController::class)->middleware('auth')->name('index');
         Route::controller(PageController::class)
             ->group(static function () {
                 Route::get('privacy-policy', 'pagePrivacy')->name('pagePrivacy');

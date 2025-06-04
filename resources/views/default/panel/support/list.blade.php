@@ -17,6 +17,9 @@
                         {{ __('Ticked ID') }}
                     </th>
                     <th>
+                        Name
+                    </th>
+                    <th>
                         {{ __('Status') }}
                     </th>
                     <th>
@@ -53,6 +56,9 @@
                     <tr>
                         <td>
                             {{ $entry->ticket_id }}
+                        </td>
+                         <td>
+                            {{ $entry->user->name ?? '' }} {{ $entry->user->surname ?? '' }}
                         </td>
                         <td>
                             <x-badge

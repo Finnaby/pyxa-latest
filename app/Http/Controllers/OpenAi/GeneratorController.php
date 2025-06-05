@@ -87,7 +87,6 @@ class GeneratorController extends Controller
     public function buildChatStreamedOutput(Request $request): ?StreamedResponse
     {
 
-        Log::info('start buildChatStreamedOutput');
 
         $prompt = $request->get('prompt');
         $realtime = $request->get('realtime', false);
@@ -100,12 +99,10 @@ class GeneratorController extends Controller
         $pdfpath = $request->get('pdfpath', null);
         $assistant = $request->get('assistant', null);
         $openRouter = null;
-        Log::info('start buildChatStreamedOutput 1');
 
         $chatbot_front_model = $request->get('chatbot_front_model', null);
 
         if (! empty($chatbot_front_model) && (int) setting('open_router_status') === 1 && EntityEnum::fromSlug($chatbot_front_model)->engine() === EngineEnum::OPEN_ROUTER) {
-        Log::info('start buildChatStreamedOutput 2');
 
             $openRouter = $chatbot_front_model;
         }
@@ -113,7 +110,6 @@ class GeneratorController extends Controller
         $user = Auth::user();
 
         $default_ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
-        Log::info('start buildChatStreamedOutput 3');
 
         if ($default_ai_engine === EngineEnum::OPEN_AI->value) {
             $chat_bot = $this->settings?->openai_default_model ?: EntityEnum::GPT_4_O->value;
@@ -129,7 +125,6 @@ class GeneratorController extends Controller
             $chat_bot = $this->settings?->openai_default_model ?: EntityEnum::GPT_4_O->value;
         }
 
-        Log::info('start buildChatStreamedOutput 4');
 
         $chat_bot_model = PlanHelper::userPlanAiModel();
         if ($chat_bot_model && empty($chatbot_front_model)) {
@@ -142,10 +137,8 @@ class GeneratorController extends Controller
                 $default_ai_engine = $default_ai_engine_new;
             }
         }
-        Log::info('start buildChatStreamedOutput 5');
 
         if (! empty($chatbot_front_model)) {
-        Log::info('start buildChatStreamedOutput 6');
 
             $oldChatbot = $chat_bot;
 
@@ -166,7 +159,6 @@ class GeneratorController extends Controller
             } else {
                 $chat_bot = $oldChatbot;
             }
-        Log::info('start buildChatStreamedOutput 7');
 
         }
 
@@ -175,7 +167,6 @@ class GeneratorController extends Controller
         $history = [];
         $realtimePrompt = $prompt;
         $chat = UserOpenaiChat::with('category')->findOrFail($chat_id);
-        Log::info('start buildChatStreamedOutput 8');
 
         // if prompt prefix exists, add it to the prompt
         // if ($chat->category->prompt_prefix != null && !str_starts_with($chat->category->slug, 'ai_')) {
@@ -197,12 +188,10 @@ class GeneratorController extends Controller
             'pdfName'             => $pdfname,
             'pdfPath'             => $pdfpath,
         ]);
-        Log::info('start buildChatStreamedOutput 9');
 
         // check if their completions for the template
         $category = $chat->category;
         if ($category->chat_completions) {
-        Log::info('start buildChatStreamedOutput 10');
 
             $chat_completions = json_decode($category->chat_completions, true, 512, JSON_THROW_ON_ERROR);
             foreach ($chat_completions as $item) {
@@ -212,42 +201,30 @@ class GeneratorController extends Controller
                 ];
             }
         } else {
-        Log::info('start buildChatStreamedOutput 11');
 
             $history[] = ['role' => $systemRole, 'content' => 'You are a helpful assistant.'];
         }
 
         $isFileSearch = setting('openai_file_search', 0) && $chat->openai_vector_id !== null;
-        Log::info('start buildChatStreamedOutput 12');
 
         // if file attached, get the content of the file
-        // if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
-        // Log::info('start buildChatStreamedOutput 13');
+        if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
 
-        //     try {
-        //         $extra_prompt = (new VectorService)->getMostSimilarText($prompt, $chat_id, 2, $category->chatbot_id);
-        //         if ($extra_prompt) {
-        // Log::info('start buildChatStreamedOutput 14');
-
-        //             if ($chat->category->slug === 'ai_webchat') {
-        //                 $history[] = [
-        //                     'role'    => $systemRole,
-        //                     'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. Website/link content: \n$extra_prompt",
-        //                 ];
-        //             } else {
-        //                 $history[] = [
-        //                     'role'    => $systemRole,
-        //                     'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content. File content: \n$extra_prompt",
-        //                 ];
-        //             }
-        //         }
-        //     } catch (Throwable $th) {
-        // Log::info('start buildChatStreamedOutput 15');
-
-        //     }
-        // } elseif ($category && $category?->instructions) {
-            $history[] = ['role' => $systemRole, 'content' => $category->instructions  ?? 'You are a helpful assistant'];
-        // }
+            if ($chat->category->slug === 'ai_webchat') {
+                $history[] = [
+                    'role'    => $systemRole,
+                    'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. ",
+                ];
+            } else {
+                $history[] = [
+                    'role'    => $systemRole,
+                    'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content.",
+                ];
+            }
+         
+        } elseif ($category && $category?->instructions) {
+            $history[] = ['role' => $systemRole, 'content' => $category->instructions ?? 'You are a helpful assistant'];
+        }
         // follow the context of the last 3 messages
         $lastThreeMessageQuery = $chat->messages()
             ->whereNotNull('input')
@@ -255,7 +232,6 @@ class GeneratorController extends Controller
             ->take(4)
             ->get()
             ->reverse();
-        Log::info('start buildChatStreamedOutput 16');
 
         // if one of the last 3 messages contain images, then write proper history for vision model for all messages
         $contain_images = $this->checkIfHistoryContainsImages($lastThreeMessageQuery);
@@ -317,12 +293,10 @@ class GeneratorController extends Controller
                 }
             }
         }
-        Log::info('start buildChatStreamedOutput 17');
 
         // check if the chat brand voice is set
         $history = $this->checkBrandVoice($chat_brand_voice, $brand_voice_prod, $history);
 
-        Log::info('start buildChatStreamedOutput 18');
 
         if (empty($images) && $chat->category->slug !== 'ai_vision') {
             if ($realtime) {
@@ -386,7 +360,6 @@ class GeneratorController extends Controller
             ];
             $contain_images = true;
         }
-         Log::info('start ChatStream method calling');
 
         return $this->streamService->ChatStream(
             $chat_bot,

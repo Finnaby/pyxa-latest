@@ -91,7 +91,7 @@ class VectorService
                     Log::info('start getMostSimilarText 4');
 
         return $result;
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             Log::error('ChatStream error: ' . $e->getMessage());
 
             return '';

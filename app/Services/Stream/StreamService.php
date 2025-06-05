@@ -82,6 +82,7 @@ class StreamService
             if (! is_null($openRouter) && setting('open_router_status') == 1) {
                 return $this->openRouterChatStream($chat_bot, $history, $main_message, $contain_images, $openRouter);
             }
+            Log::info('The ai engine '.$ai_engine);
 
             return match ($ai_engine) {
                 EngineEnum::OPEN_AI->value   => $this->openaiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),

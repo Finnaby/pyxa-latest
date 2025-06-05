@@ -58,6 +58,10 @@ class StreamService
      */
     public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null): ?StreamedResponse
     {
+         if ($chat_type === 'chatPro' && MarketplaceHelper::isRegistered('ai-chat-pro') && ! auth()->check()) {
+            $this->guest = true;
+        }
+        
         if (! $ai_engine) {
             $ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
         }

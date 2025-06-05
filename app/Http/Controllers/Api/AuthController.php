@@ -619,8 +619,7 @@ public function updateEntityCreditsToUnlimited(Request $request)
 
     $skipModel = [
         'novita',
-        'stable_diffusion',
-        'heygen'
+        'stable_diffusion'
     ];
     $subModel = ['dall-e-3'];
     // Iterate over all tool names in entity_credits and set isUnlimited to true for all models

@@ -36,7 +36,7 @@ class VectorService
                 'chatbot_id' => $chatbot_id,
             ]);
 
-        $vectors = PdfData::where('chat_id', $chat_id)->get();
+        $vectors = [];
                     Log::info('start getMostSimilarText 1.2');
 
         $chatbotVectors = ChatbotDataVector::query()

@@ -32,16 +32,19 @@ class VectorService
         // ApiHelper::setOpenAiKey();
 
         $chatbot_id = $chatbot_id ?? request('chatbot_id', 0);
-                    Log::info('start getMostSimilarText 1.1');
+                    Log::info('start getMostSimilarText 1.1'.[
+                'chatbot_id' => $chatbot_id,
+            ]);
 
         $vectors = PdfData::where('chat_id', $chat_id)->get();
+                    Log::info('start getMostSimilarText 1.2');
 
         $chatbotVectors = ChatbotDataVector::query()
             ->where('chatbot_id', $chatbot_id)
             ->where('embedding', '!=', null)
             ->get();
 
-                    Log::info('start getMostSimilarText 1.1.1');
+                    Log::info('start getMostSimilarText 1.3');
 
 
         if (count($vectors) == 0 && $chatbotVectors->count() == 0) {

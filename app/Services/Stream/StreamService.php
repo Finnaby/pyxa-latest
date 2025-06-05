@@ -59,27 +59,42 @@ class StreamService
     public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null, $responsesApi = false): ?StreamedResponse
     {
         try{
+                 Log::info('start ChatStream');
+
             if ($chat_bot === EntityEnum::AZURE_OPENAI->slug() && MarketplaceHelper::isRegistered('azure-openai')) {
+                
+                 Log::info('azure-openai');
+
                 return \App\Extensions\AzureOpenai\System\Services\AzureOpenaiService::azureOpenaiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
             }
 
             if ($chat_type === 'chatPro' && MarketplaceHelper::isRegistered('ai-chat-pro') && ! auth()->check()) {
+                 Log::info('chatPro');
+
                 $this->guest = true;
             }
 
             if ($responsesApi) {
+                 Log::info('responsesApi');
+
                 return $this->responsesApiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
             }
 
             if (! $ai_engine) {
+                 Log::info('ai_engine');
+
                 $ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
             }
 
             if (! is_null($assistant)) {
+                 Log::info('assistant');
+
                 return $this->assistantStream($chat_bot, $history, $main_message, $assistant);
             }
 
             if (! is_null($openRouter) && setting('open_router_status') == 1) {
+                 Log::info('openRouter');
+
                 return $this->openRouterChatStream($chat_bot, $history, $main_message, $contain_images, $openRouter);
             }
             Log::info('The ai engine '.$ai_engine);

@@ -36,6 +36,7 @@ use JsonException;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class GeneratorController extends Controller
 {
@@ -85,6 +86,10 @@ class GeneratorController extends Controller
      */
     public function buildChatStreamedOutput(Request $request): ?StreamedResponse
     {
+        try{
+
+         Log::info('start buildChatStreamedOutput');
+
         $prompt = $request->get('prompt');
         $realtime = $request->get('realtime', false);
         $chat_brand_voice = $request->get('chat_brand_voice');
@@ -353,6 +358,7 @@ class GeneratorController extends Controller
             ];
             $contain_images = true;
         }
+         Log::info('start ChatStream method calling');
 
         return $this->streamService->ChatStream(
             $chat_bot,
@@ -365,6 +371,22 @@ class GeneratorController extends Controller
             openRouter: $openRouter,
             responsesApi: $isFileSearch
         );
+          } catch (\Throwable $e) {
+            Log::error('buildChatStreamedOutput error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'chat_bot' => $chat_bot,
+                'chat_type' => $chat_type,
+            ]);
+
+            return response()->stream(function () use ($e) {
+                echo "data: Error: " . $e->getMessage() . "\n\n";
+                flush();
+            }, 500, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+            ]);
+        }
     }
 
     private function checkBrandVoice($chat_brand_voice, $brand_voice_prod, $history)

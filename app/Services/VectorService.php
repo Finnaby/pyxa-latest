@@ -20,7 +20,7 @@ class VectorService
     {
         try{
 
-                    Log::info('start getMostSimilarText 1 '.$text .' and '.$chat_id.'and'.$count. 'and', $chatbot_id);
+                    Log::info('start getMostSimilarText 1 '.$text .' and '.$chat_id.'and'.$count. 'and'. $chatbot_id);
                     Log::info('start getMostSimilarText 1.0');
 
         // api key update

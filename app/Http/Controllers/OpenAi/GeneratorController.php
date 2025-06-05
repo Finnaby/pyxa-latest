@@ -221,33 +221,33 @@ class GeneratorController extends Controller
         Log::info('start buildChatStreamedOutput 12');
 
         // if file attached, get the content of the file
-        if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
-        Log::info('start buildChatStreamedOutput 13');
+        // if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
+        // Log::info('start buildChatStreamedOutput 13');
 
-            try {
-                $extra_prompt = (new VectorService)->getMostSimilarText($prompt, $chat_id, 2, $category->chatbot_id);
-                if ($extra_prompt) {
-        Log::info('start buildChatStreamedOutput 14');
+        //     try {
+        //         $extra_prompt = (new VectorService)->getMostSimilarText($prompt, $chat_id, 2, $category->chatbot_id);
+        //         if ($extra_prompt) {
+        // Log::info('start buildChatStreamedOutput 14');
 
-                    if ($chat->category->slug === 'ai_webchat') {
-                        $history[] = [
-                            'role'    => $systemRole,
-                            'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. Website/link content: \n$extra_prompt",
-                        ];
-                    } else {
-                        $history[] = [
-                            'role'    => $systemRole,
-                            'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content. File content: \n$extra_prompt",
-                        ];
-                    }
-                }
-            } catch (Throwable $th) {
-        Log::info('start buildChatStreamedOutput 15');
+        //             if ($chat->category->slug === 'ai_webchat') {
+        //                 $history[] = [
+        //                     'role'    => $systemRole,
+        //                     'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. Website/link content: \n$extra_prompt",
+        //                 ];
+        //             } else {
+        //                 $history[] = [
+        //                     'role'    => $systemRole,
+        //                     'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content. File content: \n$extra_prompt",
+        //                 ];
+        //             }
+        //         }
+        //     } catch (Throwable $th) {
+        // Log::info('start buildChatStreamedOutput 15');
 
-            }
-        } elseif ($category && $category?->instructions) {
-            $history[] = ['role' => $systemRole, 'content' => $category->instructions];
-        }
+        //     }
+        // } elseif ($category && $category?->instructions) {
+            $history[] = ['role' => $systemRole, 'content' => $category->instructions  ?? 'You are a helpful assistant'];
+        // }
         // follow the context of the last 3 messages
         $lastThreeMessageQuery = $chat->messages()
             ->whereNotNull('input')

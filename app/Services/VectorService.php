@@ -29,14 +29,14 @@ class VectorService
                     Log::info('start getMostSimilarText 1.0');
 
         // api key update
-        // ApiHelper::setOpenAiKey();
+        ApiHelper::setOpenAiKey();
 
         $chatbot_id = $chatbot_id ?? request('chatbot_id', 0);
                     Log::info('start getMostSimilarText 1.1',[
                 'chatbot_id' => $chatbot_id,
             ]);
 
-        $vectors = [];
+        $vectors = PdfData::where('chat_id', $chat_id)->get();
                     Log::info('start getMostSimilarText 1.2');
 
         $chatbotVectors = ChatbotDataVector::query()

@@ -209,21 +209,31 @@ class GeneratorController extends Controller
 
         // if file attached, get the content of the file
         if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
+            try {
+                    Log::info('start getMostSimilarText 13');
 
-            if ($chat->category->slug === 'ai_webchat') {
-                $history[] = [
-                    'role'    => $systemRole,
-                    'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. ",
-                ];
-            } else {
-                $history[] = [
-                    'role'    => $systemRole,
-                    'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content.",
-                ];
+                $extra_prompt = (new VectorService)->getMostSimilarText($prompt, $chat_id, 2, $category->chatbot_id);
+                    Log::info('start getMostSimilarText 14');
+
+                if ($extra_prompt) {
+
+                    if ($chat->category->slug === 'ai_webchat') {
+                        $history[] = [
+                            'role'    => $systemRole,
+                            'content' => "You are a Web Page Analyzer assistant. When referring to content from a specific website or link, please include a brief summary or context of the content. If users inquire about the content or purpose of the website/link, provide assistance professionally without explicitly mentioning the content. Website/link content: \n$extra_prompt",
+                        ];
+                    } else {
+                        $history[] = [
+                            'role'    => $systemRole,
+                            'content' => "You are a File Analyzer assistant. When referring to content from a specific file, please include a brief summary or context of the content. If users inquire about the content or purpose of the file, provide assistance professionally without explicitly mentioning the content. File content: \n$extra_prompt",
+                        ];
+                    }
+                }
+            } catch (Throwable $th) {
+
             }
-         
         } elseif ($category && $category?->instructions) {
-            $history[] = ['role' => $systemRole, 'content' => $category->instructions ?? 'You are a helpful assistant'];
+            $history[] = ['role' => $systemRole, 'content' => $category->instructions];
         }
         // follow the context of the last 3 messages
         $lastThreeMessageQuery = $chat->messages()

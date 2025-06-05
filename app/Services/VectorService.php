@@ -7,6 +7,7 @@ use App\Helpers\Classes\ApiHelper;
 use App\Models\Chatbot\ChatbotDataVector;
 use App\Models\PdfData;
 use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Support\Facades\Log;
 
 class VectorService
 {
@@ -17,6 +18,10 @@ class VectorService
      */
     public function getMostSimilarText(string $text, $chat_id, $count = 5, $chatbot_id = null)
     {
+        try{
+
+                    Log::info('start getMostSimilarText 1');
+
         // api key update
         ApiHelper::setOpenAiKey();
 
@@ -32,6 +37,8 @@ class VectorService
         if (count($vectors) == 0 && $chatbotVectors->count() == 0) {
             return '';
         }
+                    Log::info('start getMostSimilarText 2');
+
 
         $vector = OpenAI::embeddings()->create([
             'model' => EntityEnum::TEXT_EMBEDDING_ADA_002->value,
@@ -63,6 +70,8 @@ class VectorService
             }
         }
 
+                    Log::info('start getMostSimilarText 3');
+
         usort($similarVectors, function ($a, $b) {
             return $b['similarity'] <=> $a['similarity'];
         });
@@ -74,7 +83,15 @@ class VectorService
             $result = $result . $item['content'] . "\n\n\n";
         }
 
+                    Log::info('start getMostSimilarText 4');
+
         return $result;
+        } catch (\Throwable $e) {
+            Log::error('ChatStream error: ' . $e->getMessage());
+
+            return '';
+
+        }
     }
 
     // public function getTextsFromIds(array $ids): array

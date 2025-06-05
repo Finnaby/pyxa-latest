@@ -58,38 +58,56 @@ class StreamService
      */
     public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null, $responsesApi = false): ?StreamedResponse
     {
-        if ($chat_bot === EntityEnum::AZURE_OPENAI->slug() && MarketplaceHelper::isRegistered('azure-openai')) {
-            return \App\Extensions\AzureOpenai\System\Services\AzureOpenaiService::azureOpenaiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
-        }
+        try{
+            if ($chat_bot === EntityEnum::AZURE_OPENAI->slug() && MarketplaceHelper::isRegistered('azure-openai')) {
+                return \App\Extensions\AzureOpenai\System\Services\AzureOpenaiService::azureOpenaiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
+            }
 
-        if ($chat_type === 'chatPro' && MarketplaceHelper::isRegistered('ai-chat-pro') && ! auth()->check()) {
-            $this->guest = true;
-        }
+            if ($chat_type === 'chatPro' && MarketplaceHelper::isRegistered('ai-chat-pro') && ! auth()->check()) {
+                $this->guest = true;
+            }
 
-        if ($responsesApi) {
-            return $this->responsesApiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
-        }
+            if ($responsesApi) {
+                return $this->responsesApiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
+            }
 
-        if (! $ai_engine) {
-            $ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
-        }
+            if (! $ai_engine) {
+                $ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
+            }
 
-        if (! is_null($assistant)) {
-            return $this->assistantStream($chat_bot, $history, $main_message, $assistant);
-        }
+            if (! is_null($assistant)) {
+                return $this->assistantStream($chat_bot, $history, $main_message, $assistant);
+            }
 
-        if (! is_null($openRouter) && setting('open_router_status') == 1) {
-            return $this->openRouterChatStream($chat_bot, $history, $main_message, $contain_images, $openRouter);
-        }
+            if (! is_null($openRouter) && setting('open_router_status') == 1) {
+                return $this->openRouterChatStream($chat_bot, $history, $main_message, $contain_images, $openRouter);
+            }
 
-        return match ($ai_engine) {
-            EngineEnum::OPEN_AI->value   => $this->openaiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
-            EngineEnum::ANTHROPIC->value => $this->anthropicChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
-            EngineEnum::GEMINI->value    => $this->geminiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
-            EngineEnum::DEEP_SEEK->value => $this->deepseekChatStream($chat_bot, $history, $main_message, $contain_images),
-            EngineEnum::X_AI->value      => $this->xAiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
-            default                      => throw new Exception('Invalid AI Engine'),
-        };
+            return match ($ai_engine) {
+                EngineEnum::OPEN_AI->value   => $this->openaiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
+                EngineEnum::ANTHROPIC->value => $this->anthropicChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
+                EngineEnum::GEMINI->value    => $this->geminiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
+                EngineEnum::DEEP_SEEK->value => $this->deepseekChatStream($chat_bot, $history, $main_message, $contain_images),
+                EngineEnum::X_AI->value      => $this->xAiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
+                default                      => throw new Exception('Invalid AI Engine'),
+            };
+        } catch (\Throwable $e) {
+            Log::error('ChatStream error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'chat_bot' => $chat_bot,
+                'chat_type' => $chat_type,
+                'ai_engine' => $ai_engine
+            ]);
+
+            return response()->stream(function () use ($e) {
+                echo "data: Error: " . $e->getMessage() . "\n\n";
+                flush();
+            }, 500, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+            ]);
+        }
     }
 
     private function createDriver(EntityEnum $model): ?BaseDriver

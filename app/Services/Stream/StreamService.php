@@ -56,9 +56,19 @@ class StreamService
      * @throws Exception
      * @throws GuzzleException
      */
-    public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null): ?StreamedResponse
+    public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null, $responsesApi = false): ?StreamedResponse
     {
-        
+        if ($chat_bot === EntityEnum::AZURE_OPENAI->slug() && MarketplaceHelper::isRegistered('azure-openai')) {
+            return \App\Extensions\AzureOpenai\System\Services\AzureOpenaiService::azureOpenaiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
+        }
+
+        if ($chat_type === 'chatPro' && MarketplaceHelper::isRegistered('ai-chat-pro') && ! auth()->check()) {
+            $this->guest = true;
+        }
+
+        if ($responsesApi) {
+            return $this->responsesApiStream($chat_bot, $history, $main_message, $chat_type, $contain_images);
+        }
 
         if (! $ai_engine) {
             $ai_engine = setting('default_ai_engine', EngineEnum::OPEN_AI->value);
@@ -72,13 +82,13 @@ class StreamService
             return $this->openRouterChatStream($chat_bot, $history, $main_message, $contain_images, $openRouter);
         }
 
-        return match ($ai_engine ?? EngineEnum::OPEN_AI->value) {
+        return match ($ai_engine) {
             EngineEnum::OPEN_AI->value   => $this->openaiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
             EngineEnum::ANTHROPIC->value => $this->anthropicChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
             EngineEnum::GEMINI->value    => $this->geminiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
             EngineEnum::DEEP_SEEK->value => $this->deepseekChatStream($chat_bot, $history, $main_message, $contain_images),
             EngineEnum::X_AI->value      => $this->xAiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
-            default                      => $this->openaiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
+            default                      => throw new Exception('Invalid AI Engine'),
         };
     }
 

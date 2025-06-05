@@ -362,7 +362,8 @@ class GeneratorController extends Controller
             $contain_images,
             $default_ai_engine,
             assistant: $assistant,
-            openRouter: $openRouter
+            openRouter: $openRouter,
+            responsesApi: $isFileSearch
         );
     }
 

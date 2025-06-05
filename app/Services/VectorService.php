@@ -20,12 +20,14 @@ class VectorService
     {
         try{
 
-                    Log::info('start getMostSimilarText 1');
+                    Log::info('start getMostSimilarText 1 '.$text .' and '.$chat_id.'and'.$count. 'and', $chatbot_id);
+                    Log::info('start getMostSimilarText 1.0');
 
         // api key update
         // ApiHelper::setOpenAiKey();
 
         $chatbot_id = $chatbot_id ?? request('chatbot_id', 0);
+                    Log::info('start getMostSimilarText 1.1');
 
         $vectors = PdfData::where('chat_id', $chat_id)->get();
 
@@ -33,6 +35,9 @@ class VectorService
             ->where('chatbot_id', $chatbot_id)
             ->where('embedding', '!=', null)
             ->get();
+
+                    Log::info('start getMostSimilarText 1.1.1');
+
 
         if (count($vectors) == 0 && $chatbotVectors->count() == 0) {
             return '';

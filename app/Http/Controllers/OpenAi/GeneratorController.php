@@ -378,14 +378,6 @@ class GeneratorController extends Controller
                 'chat_type' => $chat_type,
             ]);
 
-            return response()->stream(function () use ($e) {
-                echo "data: Error: " . $e->getMessage() . "\n\n";
-                flush();
-            }, 500, [
-                'Content-Type' => 'text/event-stream',
-                'Cache-Control' => 'no-cache',
-                'Connection' => 'keep-alive',
-            ]);
         }
     }
 

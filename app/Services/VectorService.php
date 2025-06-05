@@ -23,7 +23,7 @@ class VectorService
                     Log::info('start getMostSimilarText 1');
 
         // api key update
-        ApiHelper::setOpenAiKey();
+        // ApiHelper::setOpenAiKey();
 
         $chatbot_id = $chatbot_id ?? request('chatbot_id', 0);
 

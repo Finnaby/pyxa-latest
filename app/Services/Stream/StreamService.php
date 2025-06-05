@@ -58,7 +58,6 @@ class StreamService
      */
     public function ChatStream(string $chat_bot, $history, $main_message, $chat_type, $contain_images, $ai_engine = null, $assistant = null, $openRouter = null, $responsesApi = false): ?StreamedResponse
     {
-        try{
                  Log::info('start ChatStream');
 
             if ($chat_bot === EntityEnum::AZURE_OPENAI->slug() && MarketplaceHelper::isRegistered('azure-openai')) {
@@ -107,15 +106,7 @@ class StreamService
                 EngineEnum::X_AI->value      => $this->xAiChatStream($chat_bot, $history, $main_message, $chat_type, $contain_images),
                 default                      => throw new Exception('Invalid AI Engine'),
             };
-        } catch (\Throwable $e) {
-            Log::error('ChatStream error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'chat_bot' => $chat_bot,
-                'chat_type' => $chat_type,
-                'ai_engine' => $ai_engine
-            ]);
-
-        }
+     
     }
 
     private function createDriver(EntityEnum $model): ?BaseDriver

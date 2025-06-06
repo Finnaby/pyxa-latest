@@ -18,41 +18,22 @@ class VectorService
      */
     public function getMostSimilarText(string $text, $chat_id, $count = 5, $chatbot_id = null)
     {
-        try{
-
-            Log::info('Start getMostSimilarText:', [
-                'text' => $text,
-                'chat_id' => $chat_id,
-                'count' => $count,
-                'chatbot_id' => $chatbot_id,
-            ]);
-                    Log::info('start getMostSimilarText 1.0');
-
         // api key update
         ApiHelper::setOpenAiKey();
 
         $chatbot_id = $chatbot_id ?? request('chatbot_id', 0);
-                    Log::info('start getMostSimilarText 1.1',[
-                'chatbot_id' => $chatbot_id,
-            ]);
-        return '';
 
         $vectors = PdfData::where('chat_id', $chat_id)->get();
-                    Log::info('start getMostSimilarText 1.2');
 
         $chatbotVectors = ChatbotDataVector::query()
             ->where('chatbot_id', $chatbot_id)
             ->where('embedding', '!=', null)
             ->get();
 
-                    Log::info('start getMostSimilarText 1.3');
-
 
         if (count($vectors) == 0 && $chatbotVectors->count() == 0) {
             return '';
         }
-                    Log::info('start getMostSimilarText 2');
-
 
         $vector = OpenAI::embeddings()->create([
             'model' => EntityEnum::TEXT_EMBEDDING_ADA_002->value,
@@ -84,7 +65,6 @@ class VectorService
             }
         }
 
-                    Log::info('start getMostSimilarText 3');
 
         usort($similarVectors, function ($a, $b) {
             return $b['similarity'] <=> $a['similarity'];
@@ -97,15 +77,8 @@ class VectorService
             $result = $result . $item['content'] . "\n\n\n";
         }
 
-                    Log::info('start getMostSimilarText 4');
 
         return $result;
-        } catch (\Exception $e) {
-            Log::error('ChatStream error: ' . $e->getMessage());
-
-            return '';
-
-        }
     }
 
     // public function getTextsFromIds(array $ids): array

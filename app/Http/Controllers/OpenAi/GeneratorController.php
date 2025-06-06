@@ -210,11 +210,8 @@ class GeneratorController extends Controller
         // if file attached, get the content of the file
         if (! $isFileSearch && ($category->chatbot_id || PdfData::where('chat_id', $chat_id)->exists())) {
             try {
-                    Log::info('start getMostSimilarText 13');
 
                 $extra_prompt = (new VectorService)->getMostSimilarText($prompt, $chat_id, 2, $category->chatbot_id);
-                    Log::info('start getMostSimilarText 14');
-
                 if ($extra_prompt) {
 
                     if ($chat->category->slug === 'ai_webchat') {

@@ -1,0 +1,5 @@
+[02-Jun-2025 16:44:40 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/adilraufkahara/public_html/v2.pyxa.ai/bootstrap/app.php:14
+Stack trace:
+#0 /home/adilraufkahara/public_html/v2.pyxa.ai/artisan(20): require_once()
+#1 {main}
+  thrown in /home/adilraufkahara/public_html/v2.pyxa.ai/bootstrap/app.php on line 14

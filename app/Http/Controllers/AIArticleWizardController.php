@@ -92,8 +92,15 @@ class AIArticleWizardController extends Controller
                             if (($extraImage['storage'] ?? '') == self::STORAGE_S3) {
                                 Storage::disk(self::STORAGE_S3)->delete(basename($extraImage['path']));
                             } else {
-                                if (file_exists(substr($extraImage['path'], 1))) {
-                                    unlink(substr($extraImage['path'], 1));
+                                    $path = $extraImage['path'];
+
+                                // Skip if it's a URL
+                                if (!Str::startsWith($path, ['http://', 'https://'])) {
+                                    $fullPath = public_path(ltrim($path, '/'));
+
+                                    if (file_exists($fullPath)) {
+                                        unlink($fullPath);
+                                    }
                                 }
                             }
                         }

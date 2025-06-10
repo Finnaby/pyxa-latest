@@ -41,7 +41,6 @@
 >
     <div class="container">
         @include('advanced-image::home.generator-form')
-        @include('advanced-image::home.advanced-options')
         @if ($app_is_demo)
             @if ($tools)
                 @include('advanced-image::home.tools-grid', ['tools' => $tools])

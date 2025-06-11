@@ -198,7 +198,7 @@ trait HasCreditLimit
     /**
      * @throws Exception
      */
-    public function decreaseCredit(float $value = 1.00): bool
+    public function decreaseCredit(float $value = 1.00, ?int $id = null): bool
     {
         if ($this->guest || $this->isUnlimitedCredit()) {
             return true;
@@ -209,7 +209,7 @@ trait HasCreditLimit
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
 
         UserUsageCredit::create([
-            'user_id'     => Auth::id(),
+            'user_id'     => Auth::id() ?? $id,
             'model_key'   => $this->enum()->slug(),
             'credit'      => $value,
             'unit_price'  => $unitPrice,

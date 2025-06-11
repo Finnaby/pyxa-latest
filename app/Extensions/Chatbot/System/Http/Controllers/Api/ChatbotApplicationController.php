@@ -163,6 +163,8 @@ class ChatbotApplicationController extends Controller
         }
 
         if (Helper::appIsNotDemo()) {
+        Log::info('Decreasing credit for user ID: ' . $chatbot->user_id);
+
             $response = $this->service
                 ->setChatbot($chatbot)
                 ->setConversation($chatbotConversation)

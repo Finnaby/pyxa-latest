@@ -209,7 +209,6 @@ trait HasCreditLimit
         $currentSpend = $value * $unitPrice;
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
 
-        Log::info('Decreasing credit for user ID: ' . $id);
 
         UserUsageCredit::create([
             'user_id'     => Auth::id(),

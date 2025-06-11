@@ -622,6 +622,8 @@ public function updateEntityCreditsToUnlimited(Request $request)
         'stable_diffusion'
     ];
     $subModel = ['dall-e-3'];
+    $model = ['midjourney'];
+
     // Iterate over all tool names in entity_credits and set isUnlimited to true for all models
     foreach ($entityCredits as $toolName => $models) {
         if(in_array($toolName, $skipModel)){
@@ -633,6 +635,8 @@ public function updateEntityCreditsToUnlimited(Request $request)
             }
             if ($entityCredits[$toolName][$modelName]['credit'] > 0 && $entityCredits[$toolName][$modelName]['isUnlimited'] == false) 
             {
+                $entityCredits[$toolName][$modelName]['isUnlimited'] = true;
+            }else if (in_array($modelName, $model)){
                 $entityCredits[$toolName][$modelName]['isUnlimited'] = true;
             }
         }

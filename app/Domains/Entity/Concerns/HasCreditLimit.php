@@ -211,13 +211,13 @@ trait HasCreditLimit
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
 
 
-        // UserUsageCredit::create([
-        //     'user_id'     => Auth::id() ?? $id,
-        //     'model_key'   => $this->enum()->slug(),
-        //     'credit'      => $value,
-        //     'unit_price'  => $unitPrice,
-        //     'total'       => $value * $unitPrice,
-        // ]);
+        UserUsageCredit::create([
+            'user_id'     => Auth::id() ?? $id,
+            'model_key'   => $this->enum()->slug(),
+            'credit'      => $value,
+            'unit_price'  => $unitPrice,
+            'total'       => $value * $unitPrice,
+        ]);
 
         return $this->updateUserCredit($value, function ($creditBalance, $credit) {
             return max(0, $creditBalance - $credit);

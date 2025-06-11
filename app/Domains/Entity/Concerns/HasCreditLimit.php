@@ -204,8 +204,6 @@ trait HasCreditLimit
         if ($this->guest || $this->isUnlimitedCredit()) {
             return true;
         }
-                Log::info('Decreasing credit for user ID'.$id);
-
         $unitPrice = EntityEnum::fromSlug($this->enum()->slug())->unitPrice();
         $currentSpend = $value * $unitPrice;
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();

@@ -204,19 +204,20 @@ trait HasCreditLimit
         if ($this->guest || $this->isUnlimitedCredit()) {
             return true;
         }
+                Log::info('Decreasing credit for user ID'.$id);
 
         $unitPrice = EntityEnum::fromSlug($this->enum()->slug())->unitPrice();
         $currentSpend = $value * $unitPrice;
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
 
 
-        UserUsageCredit::create([
-            'user_id'     => Auth::id() ?? $id,
-            'model_key'   => $this->enum()->slug(),
-            'credit'      => $value,
-            'unit_price'  => $unitPrice,
-            'total'       => $value * $unitPrice,
-        ]);
+        // UserUsageCredit::create([
+        //     'user_id'     => Auth::id() ?? $id,
+        //     'model_key'   => $this->enum()->slug(),
+        //     'credit'      => $value,
+        //     'unit_price'  => $unitPrice,
+        //     'total'       => $value * $unitPrice,
+        // ]);
 
         return $this->updateUserCredit($value, function ($creditBalance, $credit) {
             return max(0, $creditBalance - $credit);

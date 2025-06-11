@@ -35,7 +35,6 @@ class GeneratorService
             return trans('You have no credits left. Please consider upgrading your plan.');
         }
 
-                Log::info('Decreasing credit for user ID'.$this->chatbot->user->id);
 
         $generated = $generator
             ->setConversation($this->conversation)

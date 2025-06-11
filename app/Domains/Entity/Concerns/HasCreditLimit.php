@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 
 trait HasCreditLimit
 {
@@ -207,6 +208,7 @@ trait HasCreditLimit
         $unitPrice = EntityEnum::fromSlug($this->enum()->slug())->unitPrice();
         $currentSpend = $value * $unitPrice;
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
+        Log::info('Decreasing credit for user ID');
 
         UserUsageCredit::create([
             'user_id'     => Auth::id() ?? $id,

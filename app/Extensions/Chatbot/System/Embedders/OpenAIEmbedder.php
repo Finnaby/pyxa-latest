@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Validation\ValidationException;
 use OpenAI;
 use OpenAI\Responses\Embeddings\CreateResponse;
+use Illuminate\Support\Facades\Log;
 
 class OpenAIEmbedder extends Embedder
 {
@@ -32,6 +33,7 @@ class OpenAIEmbedder extends Embedder
         } catch (Exception $e) {
             throw ValidationException::withMessages(['message' => $e->getMessage()]);
         }
+        Log::info('Decreasing credit for user ID: ' . $userId);
 
         $driver->decreaseCredit(1.00, $userId);
 

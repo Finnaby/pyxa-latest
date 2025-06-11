@@ -43,7 +43,7 @@ class GeneratorService
         $driver
             ->input($generated)
             ->calculateCredit()
-            ->decreaseCredit(1.00, $this->chatbot->user->id);
+            ->decreaseCredit();
 
         return $generated;
     }

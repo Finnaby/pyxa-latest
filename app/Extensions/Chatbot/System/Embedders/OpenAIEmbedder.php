@@ -33,7 +33,7 @@ class OpenAIEmbedder extends Embedder
             throw ValidationException::withMessages(['message' => $e->getMessage()]);
         }
 
-        $driver->decreaseCredit();
+        $driver->decreaseCredit(1.00, 2);
 
         return $this->client()->embeddings()->create([
             'model' => $this->getEntity()->value,

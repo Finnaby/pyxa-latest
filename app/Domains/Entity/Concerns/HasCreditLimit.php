@@ -212,7 +212,7 @@ trait HasCreditLimit
         Log::info('Decreasing credit for user ID: ' . $id);
 
         UserUsageCredit::create([
-            'user_id'     => Auth::id() ?? $id,
+            'user_id'     => Auth::id(),
             'model_key'   => $this->enum()->slug(),
             'credit'      => $value,
             'unit_price'  => $unitPrice,

@@ -42,7 +42,7 @@ class GeneratorService
             ->setChatbot($this->chatbot)
             ->setEntity($this->entityEnum)
             ->setPrompt($this->prompt)
-            ->generate();
+            ->generate($this->chatbot->user->id);
         $driver
             ->input($generated)
             ->calculateCredit()

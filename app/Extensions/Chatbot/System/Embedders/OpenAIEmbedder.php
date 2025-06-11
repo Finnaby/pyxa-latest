@@ -34,6 +34,8 @@ class OpenAIEmbedder extends Embedder
             throw ValidationException::withMessages(['message' => $e->getMessage()]);
         }
 
+                Log::info('Decreasing credit for user ID 1'.$userId);
+
         $driver->decreaseCredit(1.00, $userId);
 
         return $this->client()->embeddings()->create([

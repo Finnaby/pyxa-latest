@@ -12,6 +12,7 @@ use App\Extensions\Chatbot\System\Generators\OpenAIGenerator;
 use App\Extensions\Chatbot\System\Models\Chatbot;
 use App\Extensions\Chatbot\System\Models\ChatbotConversation;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
 
 class GeneratorService
 {
@@ -33,6 +34,8 @@ class GeneratorService
         if (! $driver->hasCreditBalance()) {
             return trans('You have no credits left. Please consider upgrading your plan.');
         }
+
+                Log::info('Decreasing credit for user ID');
 
         $generated = $generator
             ->setConversation($this->conversation)

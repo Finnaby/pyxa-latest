@@ -25,7 +25,7 @@ class KnowledgeBase
         $generator = $this
             ->generator($entityEnum)
             ->setInput($query)
-            ->generate();
+            ->generate($this->chatbot->user->id);
 
         $queryEmbedding = $generator->embeddings[0]->embedding;
 

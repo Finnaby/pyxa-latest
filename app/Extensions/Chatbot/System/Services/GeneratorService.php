@@ -12,6 +12,7 @@ use App\Extensions\Chatbot\System\Generators\OpenAIGenerator;
 use App\Extensions\Chatbot\System\Models\Chatbot;
 use App\Extensions\Chatbot\System\Models\ChatbotConversation;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
 
 class GeneratorService
 {
@@ -40,7 +41,7 @@ class GeneratorService
             ->setEntity($this->entityEnum)
             ->setPrompt($this->prompt)
             ->generate();
-
+        Log::info('Decreasing credit for user ID: ' . $this->chatbot->user->id);
         $driver
             ->input($generated)
             ->calculateCredit()

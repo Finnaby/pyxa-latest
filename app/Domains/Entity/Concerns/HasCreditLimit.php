@@ -208,7 +208,9 @@ trait HasCreditLimit
         $unitPrice = EntityEnum::fromSlug($this->enum()->slug())->unitPrice();
         $currentSpend = $value * $unitPrice;
         setting(['total_spend' => ((int) setting('total_spend', 0) + $currentSpend)])->save();
-        Log::info('Decreasing credit for user ID');
+
+        $id1 = Auth::id() ?? 0;
+        Log::info('Decreasing credit for user ID: ' . $id1);
 
         UserUsageCredit::create([
             'user_id'     => Auth::id() ?? $id,

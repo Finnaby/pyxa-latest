@@ -12,7 +12,7 @@ use OpenAI\Responses\Embeddings\CreateResponse;
 
 class OpenAIEmbedder extends Embedder
 {
-    public function generate(): CreateResponse
+    public function generate(?int $userId = null): CreateResponse
     {
         $arrayInput = $this->getInput();
 
@@ -33,7 +33,7 @@ class OpenAIEmbedder extends Embedder
             throw ValidationException::withMessages(['message' => $e->getMessage()]);
         }
 
-        $driver->decreaseCredit(1.00, 2);
+        $driver->decreaseCredit(1.00, $userId);
 
         return $this->client()->embeddings()->create([
             'model' => $this->getEntity()->value,

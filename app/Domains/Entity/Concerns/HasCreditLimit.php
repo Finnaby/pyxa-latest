@@ -211,7 +211,7 @@ trait HasCreditLimit
 
 
         UserUsageCredit::create([
-            'user_id'     => Auth::id(),
+            'user_id'     => Auth::id() ?? $id,
             'model_key'   => $this->enum()->slug(),
             'credit'      => $value,
             'unit_price'  => $unitPrice,

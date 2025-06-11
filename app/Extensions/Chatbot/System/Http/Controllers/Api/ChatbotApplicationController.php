@@ -163,7 +163,6 @@ class ChatbotApplicationController extends Controller
         }
 
         if (Helper::appIsNotDemo()) {
-        Log::info('Decreasing credit for user ID: ' . $chatbot->user_id);
 
             $response = $this->service
                 ->setChatbot($chatbot)
@@ -171,7 +170,7 @@ class ChatbotApplicationController extends Controller
                 ->setPrompt(
                     $request->validated('prompt')
                 )
-                ->generate();
+                ->generate($chatbot->user_id);
 
             if (empty($response)) {
                 $response = trans('Sorry, I can\'t answer right now.');

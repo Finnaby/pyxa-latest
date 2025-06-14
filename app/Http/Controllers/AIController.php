@@ -1558,7 +1558,7 @@ class AIController extends Controller
                     ],
                     [
                         'name'     => 'strength',
-                        'contents' => 0,
+                        'contents' => 0.50,
                     ],
                     [
                         'name'     => 'image',

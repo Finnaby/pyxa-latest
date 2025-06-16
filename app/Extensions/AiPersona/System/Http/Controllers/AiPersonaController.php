@@ -29,6 +29,7 @@ class AiPersonaController extends Controller
         $avatars = AiPersona::query()
             ->where('user_id', auth()->id())
             ->orderByRaw("FIELD(status, 'in_progress') DESC")
+            ->orderBy('created_at', 'desc')                
             ->paginate($perPage, ['*'], 'page', $page);
 
         // Map over the paginated items and fetch video details

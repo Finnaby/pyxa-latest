@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AiPersonaController extends Controller
 {
@@ -21,29 +22,40 @@ class AiPersonaController extends Controller
 
     public function index(): View
     {
-        $userAvatars = AiPersona::query()->where('user_id', auth()->id())->pluck('avatar_id')->toArray();
+        $perPage = 10;
+        $page = request()->get('page', 1);
 
+        // Get paginated AiPersona entries ordered by in_progress first
+        $avatars = AiPersona::query()
+            ->where('user_id', auth()->id())
+            ->orderByRaw("FIELD(status, 'in_progress') DESC")
+            ->paginate($perPage, ['*'], 'page', $page);
 
-        $allVideos = $this->service->listVideos()['data']['videos'] ?? [];
-
-
-        $userVideos = array_filter($allVideos, function ($video) use ($userAvatars) {
-            return isset($video['video_id']) && in_array($video['video_id'], $userAvatars, true);
+        // Map over the paginated items and fetch video details
+        $detailedVideos = $avatars->getCollection()->map(function ($persona) {
+            $detail = $this->service->retrieveVideo($persona->avatar_id)['data'];
+            return array_merge($detail, ['video_id' => $persona->avatar_id]);
         });
 
-        $detailedVideos = array_map(function ($video) {
-            $detail = $this->service->retrieveVideo($video['video_id'])['data'];
+        // Wrap the mapped collection back into paginator
+        $paginatedVideos = new LengthAwarePaginator(
+            $detailedVideos,
+            $avatars->total(),
+            $avatars->perPage(),
+            $avatars->currentPage(),
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
-            return array_merge($video, $detail);
-        }, $userVideos);
+        $inProgress = AiPersona::query()
+            ->where('user_id', auth()->id())
+            ->where('status', 'in_progress')
+            ->pluck('avatar_id')
+            ->toArray();
 
-        $inProgress = AiPersona::query()->where('user_id', auth()->id())
-            ->where('status', 'in_progress')->get()->pluck('avatar_id')->toArray();
-
-        return view('ai-persona::index', [
-            'list'       => $detailedVideos,
+      return view('ai-persona::index', [
+            'list'       => $paginatedVideos,
             'inProgress' => $inProgress,
-        ]);
+        ] );
     }
 
     public function create(): View

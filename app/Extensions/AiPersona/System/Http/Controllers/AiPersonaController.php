@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AiPersonaController extends Controller
 {
@@ -22,7 +23,12 @@ class AiPersonaController extends Controller
     {
         $userAvatars = AiPersona::query()->where('user_id', auth()->id())->pluck('avatar_id')->toArray();
 
+        Log::info('user Avatars listing', $userAvatars);
+
         $allVideos = $this->service->listVideos()['data']['videos'] ?? [];
+
+        Log::info('all Videos user', $allVideos);
+
         $userVideos = array_filter($allVideos, function ($video) use ($userAvatars) {
             return isset($video['video_id']) && in_array($video['video_id'], $userAvatars, true);
         });

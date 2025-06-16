@@ -27,7 +27,7 @@ class AiPersonaController extends Controller
 
         $allVideos = $this->service->listVideos()['data']['videos'] ?? [];
 
-        Log::info('all Videos user', $allVideos);
+        Log::info('all Videos user ' . count($allVideos), $allVideos);
 
         $userVideos = array_filter($allVideos, function ($video) use ($userAvatars) {
             return isset($video['video_id']) && in_array($video['video_id'], $userAvatars, true);

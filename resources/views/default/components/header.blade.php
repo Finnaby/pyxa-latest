@@ -1,4 +1,5 @@
-<header class="lqd-header relative flex h-[--header-height] border-b border-header-border bg-header-background text-xs font-medium transition-colors max-lg:h-[65px]">
+<header
+    class="lqd-header relative flex h-[--header-height] border-b border-header-border bg-header-background text-xs font-medium transition-colors max-lg:h-[65px]">
     <div @class([
         'lqd-header-container flex w-full grow gap-2 px-4 max-lg:w-full max-lg:max-w-none',
         'container' => !$attributes->get('layout-wide'),
@@ -10,13 +11,9 @@
 
         {{-- Mobile nav toggle and logo --}}
         <div class="mobile-nav-logo flex items-center gap-3 lg:hidden">
-            <button
-                class="lqd-mobile-nav-toggle size-10 flex items-center justify-center"
-                type="button"
-                x-init
+            <button class="lqd-mobile-nav-toggle size-10 flex items-center justify-center" type="button" x-init
                 @click.prevent="$store.mobileNav.toggleNav()"
-                :class="{ 'lqd-is-active': !$store.mobileNav.navCollapse }"
-            >
+                :class="{ 'lqd-is-active': !$store.mobileNav.navCollapse }">
                 <span class="lqd-mobile-nav-toggle-icon relative h-[2px] w-5 rounded-xl bg-current"></span>
             </button>
             <x-header-logo />
@@ -34,7 +31,8 @@
         @includeFirst(['focus-mode::header', 'components.includes.ai-tools', 'vendor.empty'])
 
         {{-- Search form --}}
-        <div class="header-search-container flex items-center peer-[&.header-title-container]/title:grow peer-[&.header-title-container]/title:justify-center">
+        <div
+            class="header-search-container flex items-center peer-[&.header-title-container]/title:grow peer-[&.header-title-container]/title:justify-center">
             <x-header-search />
         </div>
 
@@ -46,38 +44,33 @@
             @else
                 <div class="flex items-center max-xl:gap-2 max-lg:hidden xl:gap-3">
                     @if (Auth::user()->isAdmin())
-                        <x-button
-                            href="{{ route('dashboard.admin.index') }}"
-                            variant="ghost-shadow"
-                        >
+                        <x-button href="{{ route('dashboard.admin.index') }}" variant="ghost-shadow">
                             {{ __('Admin Panel') }}
                         </x-button>
                     @endif
 
+                  
+
                     @if ($settings_two->liquid_license_type == 'Extended License')
                         @if ($subscription = getSubscription())
-                            <x-button
-                                class="max-xl:hidden"
-                                href="{{ route('dashboard.user.payment.subscription') }}"
-                                variant="ghost-shadow"
-                            >
-                                {{ $subscription?->plan?->name }} -  {{ getSubscriptionDaysLeft() }}
+                            <x-button class="max-xl:hidden" href="{{ route('dashboard.user.payment.subscription') }}"
+                                variant="ghost-shadow">
+                                {{ $subscription?->plan?->name }} - {{ getSubscriptionDaysLeft() }}
                                 {{ __('Days Left') }}
                             </x-button>
                         @else
-                            <x-button
-                                class="max-xl:hidden"
-                                href="{{ route('dashboard.user.payment.subscription') }}"
-                                variant="ghost-shadow"
-                            >
+                            <x-button class="max-xl:hidden" href="{{ route('dashboard.user.payment.subscription') }}"
+                                variant="ghost-shadow">
                                 {{ __('No Active Subscription') }}
                             </x-button>
                         @endif
 
-                        <x-button
-                            class="max-xl:hidden"
-                            href="{{ route('dashboard.user.payment.subscription') }}"
-                        >
+
+                        <x-button href="https://app.loopedin.io/pyxaai" variant="ghost-shadow" target="_blank">
+                            {{ __('User Hub ') }}
+                        </x-button>
+
+                        <x-button class="max-xl:hidden" href="{{ route('dashboard.user.payment.subscription') }}">
                             <x-tabler-bolt class="size-4 fill-current" />
                             <span class="max-lg:hidden">
                                 {{ __('Upgrade') }}
@@ -89,11 +82,16 @@
 
             <div class="flex items-center gap-4 max-lg:gap-2">
                 {{-- Dark/light switch --}}
+
                 @if (Theme::getSetting('dashboard.supportedColorSchemes') === 'all')
                     <x-light-dark-switch />
                 @endif
 
-                @includeFirst(['focus-mode::ai-tools-button', 'components.includes.ai-tools-button', 'vendor.empty'])
+                @includeFirst([
+                    'focus-mode::ai-tools-button',
+                    'components.includes.ai-tools-button',
+                    'vendor.empty',
+                ])
 
                 @if (setting('notification_active', 0))
                     {{-- Notifications --}}
@@ -108,9 +106,7 @@
                 {{-- Upgrade button on mobile --}}
                 <x-button
                     class="lqd-header-upgrade-btn size-10 flex items-center justify-center border p-0 text-current dark:bg-white/[3%] lg:hidden"
-                    variant="link"
-                    href="{{ route('dashboard.user.payment.subscription') }}"
-                >
+                    variant="link" href="{{ route('dashboard.user.payment.subscription') }}">
                     <x-tabler-bolt stroke-width="1.5" />
                 </x-button>
 

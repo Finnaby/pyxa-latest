@@ -70,9 +70,9 @@
                     </x-button>
 
                      <x-button
-							class="py-2.5 lg:px-5"
+							class="py-2.5 lg:px-5  outline-2 outline-offset-0"
                             href="https://app.loopedin.io/pyxaai"
-                            variant="ghost-shadow"
+                            variant="outline"
                             target="_blank"
                         >
                             {{ __('User Hub') }}

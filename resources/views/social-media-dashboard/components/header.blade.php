@@ -68,6 +68,15 @@
                             {{ __('Upgrade') }}
                         </span>
                     </x-button>
+
+                     <x-button
+							class="py-2.5 lg:px-5"
+                            href="https://app.loopedin.io/pyxaai"
+                            variant="ghost-shadow"
+                            target="_blank"
+                        >
+                            {{ __('User Hub') }}
+                        </x-button>
                     {{-- @if (Auth::user()->isAdmin())
                         <x-button
 							class="py-2.5 lg:px-5"

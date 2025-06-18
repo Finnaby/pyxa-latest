@@ -604,7 +604,6 @@
                     </h4>
                 @endforelse
             </div>
-            @includeFirst(['advanced-image::shared-components.templates', 'vendor.empty'])
         </div>
     </div>
 

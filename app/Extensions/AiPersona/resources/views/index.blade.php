@@ -75,14 +75,15 @@
                 </defs>
             </svg>
 
-            @if (filled($list))
-                <h3 class="mb-8">
-                    @lang('My Videos')
-                </h3>
-            @else
-                <h2 class="col-span-full flex items-center justify-center">
+            @if ($list->isEmpty())
+               <h2 class="col-span-full flex items-center justify-center">
                     @lang('No videos found.')
                 </h2>
+
+            @else
+                  <h3 class="mb-8">
+                    @lang('My Videos')
+                </h3>
             @endif
 
             <div id="videos-container">

@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 class ShareController extends Controller
 {
     public function share($category, $chat, $message): View

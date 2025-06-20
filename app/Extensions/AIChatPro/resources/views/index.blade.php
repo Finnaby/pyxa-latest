@@ -829,6 +829,7 @@
     <script src="{{ custom_theme_url('/assets/libs/vscode-markdown-it-katex/index.js') }}"></script>
 
     @include('panel.user.openai_chat.components.chat_js')
+    @include('chat-share::share-script-include')
 
     <script>
         (() => {

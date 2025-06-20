@@ -10,7 +10,7 @@
         variant="primary"
         disable-modal="{{ $app_is_demo ?? '' }}"
         disable-modal-message="{{ __('This feature is disabled in Demo version.') }}"
-        @click.prevent="openModal, result = ''"
+        @click.prevent="toggleModal()"
         title="{{ __('Share') }}"
     >
         <x-tabler-message-share class="size-5 md:hidden" />
